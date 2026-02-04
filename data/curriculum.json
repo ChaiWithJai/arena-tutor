@@ -7,25 +7,39 @@
       "name": "The Collapse Model",
       "core": "Linear compositions remain linear. Nonlinearity breaks the chain.",
       "meadows": "Stocks without flows are dead accumulations",
-      "arena": "Without ReLU, deep networks collapse to single matrix"
+      "arena": "Without ReLU, deep networks collapse to single matrix",
+      "deep_explanation": "When you stack linear layers, the result is mathematically equivalent to a single linear layer. If layer1(x) = W1*x and layer2(x) = W2*x, then layer2(layer1(x)) = W2*W1*x = W_combined*x. No matter how many layers you stack, you just get one matrix. ReLU breaks this by introducing a decision point: if x > 0, pass it through; else, output 0. This creates different 'paths' through the network depending on input values, enabling complex functions.",
+      "js_analogy": "Think of it like function composition in JS: const f = x => 2*x; const g = x => 3*x; const composed = x => g(f(x)); // Just 6*x! But const relu = x => Math.max(0, x); const nonlinear = x => relu(g(f(x))); // Now it's different for positive vs negative x"
     },
     "thermostat": {
       "name": "The Thermostat Model",
       "core": "Training is a balancing feedback loop seeking equilibrium.",
       "meadows": "Balancing feedback loops seek equilibrium",
-      "arena": "Gradient descent seeks loss minimum"
+      "arena": "Gradient descent seeks loss minimum",
+      "deep_explanation": "A thermostat measures temperature gap (current vs target), then adjusts heating/cooling to close that gap. Neural network training works the same way: the loss function measures the gap between predictions and targets, gradients tell us which direction to adjust weights, and the optimizer makes small adjustments to close the gap. The learning rate is like thermostat sensitivity - too high and you overshoot, too low and you take forever to reach equilibrium.",
+      "js_analogy": "Like a game loop: while (loss > threshold) { const error = target - prediction; const adjustment = learningRate * error; weights = weights - adjustment; } You keep adjusting until you reach the target."
     },
     "routing": {
       "name": "Information Routing Model",
       "core": "Backprop routes error signals. Vanishing gradients break the loop.",
       "meadows": "Information flows determine system behavior",
-      "arena": "Backprop routes error through computational graph"
+      "arena": "Backprop routes error through computational graph",
+      "deep_explanation": "When you call loss.backward(), PyTorch traces back through every operation that led to the loss, computing how much each parameter contributed to the error. This is the chain rule in action: if y = f(g(x)), then dy/dx = dy/dg * dg/dx. The gradient 'routes' backward through the computation graph. Vanishing gradients happen when these multiplied terms get very small (like 0.1 * 0.1 * 0.1 = 0.001), so early layers barely get updated.",
+      "js_analogy": "Like error propagation in a callback chain: fetchData().then(parse).then(validate).then(save). If save() fails, the error traces back through validate, parse, to fetchData. Each step in the chain knows how to pass the error backward."
     },
     "dimensionality": {
       "name": "The Dimensionality Model",
       "core": "Tensor shapes are system boundaries. Einops makes boundaries explicit.",
       "meadows": "System boundaries define what flows can cross",
-      "arena": "Tensor shapes constrain valid operations"
+      "arena": "Tensor shapes constrain valid operations",
+      "deep_explanation": "Tensor shapes define what operations are valid. A (batch, seq, d_model) tensor can only matrix-multiply with a (d_model, something) tensor - the inner dimensions must match. This is like type-checking for neural networks. Einops makes these boundaries explicit with readable notation: rearrange(x, 'b s d -> b d s') clearly shows you're swapping the last two dimensions. Shape errors are the most common bugs in deep learning.",
+      "js_analogy": "Like array shapes in JS: you can't do arr1.map((row, i) => row.map((val, j) => val + arr2[i][j])) unless arr1 and arr2 have matching dimensions. Tensor shapes are strict type constraints."
+    },
+    "relationships": {
+      "name": "How Mental Models Connect",
+      "core": "Dimensionality defines boundaries → Collapse shows composition rules → Thermostat drives learning → Routing propagates signals",
+      "progression": "Start with shapes (Dimensionality), understand what happens when you compose layers (Collapse), see how training adjusts weights (Thermostat), trace how errors flow backward (Routing)",
+      "unified_view": "A neural network is a system where: tensor shapes constrain valid operations (Dimensionality), nonlinearity prevents collapse (Collapse), training seeks equilibrium (Thermostat), and gradients route error signals (Routing). For sycophancy: the reward signal (Thermostat) routes through the network (Routing) shaping learned features (Dimensionality) that don't collapse because of nonlinearity (Collapse)."
     }
   },
   "personas": {
@@ -46,6 +60,48 @@
       "profile": "8 years L&D, conceptual thinker, basic Python",
       "blocker": "Gets lost in implementation details",
       "scaffolding": ["Meta-level insights", "Concept frameworks first", "Heavy AI assistance OK"]
+    }
+  },
+  "supplementary_concepts": {
+    "qkv_intuition": {
+      "name": "Why Attention Uses Q, K, V",
+      "core": "Separate projections for 'what am I looking for', 'what do I contain', and 'what do I return'",
+      "explanation": "Think of a library search. Query (Q) is 'what am I looking for?' Keys (K) are 'what topics does each book cover?' Values (V) are 'what information does each book contain?' Separate projections let the model learn different representations for 'asking' vs 'being asked' vs 'retrieving'. Without separation, the model couldn't distinguish between searching and being searched.",
+      "js_analogy": "const books = [{key: 'python basics', value: 'print, loops, functions'}, {key: 'ML intro', value: 'tensors, gradients, training'}];\nconst query = 'how to train models';\nconst scores = books.map(b => similarity(query, b.key));\nconst result = weightedSum(books.map(b => b.value), softmax(scores));",
+      "math_intuition": "attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) @ V. The QK^T computes similarity scores, softmax converts to weights summing to 1, then we take weighted average of V. The sqrt(d_k) prevents dot products from getting too large.",
+      "capstone_connection": "In sycophancy analysis, attention patterns show WHICH inputs the model weights heavily. If it over-attends to user sentiment vs factual content, that's a sycophancy signal."
+    },
+    "numerical_gradient": {
+      "name": "Gradients Without Calculus",
+      "core": "Gradient = how much output changes when you nudge input",
+      "explanation": "You don't need calculus to understand gradients. Just compute: gradient = (f(x + tiny_step) - f(x)) / tiny_step. This tells you 'if I increase x a little, how much does output change?' If gradient is positive, increasing x increases output. If negative, increasing x decreases output. To minimize: move opposite to gradient direction.",
+      "js_analogy": "function numericalGradient(f, x, h = 0.0001) {\n  return (f(x + h) - f(x)) / h;\n}\n\n// Example: f(x) = x^2, we want to minimize it\nconst f = x => x * x;\nlet x = 5;\nfor (let i = 0; i < 100; i++) {\n  const grad = numericalGradient(f, x);\n  x = x - 0.1 * grad;  // Move opposite to gradient\n}\nconsole.log(x);  // ~0 (the minimum!)",
+      "math_connection": "This is the definition of derivative: lim(h→0) [f(x+h) - f(x)] / h. PyTorch's autograd does this symbolically (faster and more accurate), but conceptually it's the same question: 'how does output change with input?'",
+      "capstone_connection": "Training routes gradient signals through the model. Understanding gradients = understanding how human preference feedback shapes model weights."
+    },
+    "ppo_pseudocode": {
+      "name": "PPO: Don't Change Too Fast",
+      "core": "Clip policy updates to prevent catastrophic forgetting",
+      "explanation": "PPO (Proximal Policy Optimization) is the algorithm used in RLHF. The key insight: if you update the policy too aggressively, it forgets what it learned. PPO clips the update to stay 'proximal' (close) to the old policy.",
+      "js_analogy": "// PPO intuition in code\nconst oldPolicy = model.getActionProbabilities(state);\n// ... collect experience ...\nconst newPolicy = model.getActionProbabilities(state);\n\nconst ratio = newPolicy / oldPolicy;\n// 'How different is our new policy?'\n\n// Clip extreme changes to [0.8, 1.2]\nconst clippedRatio = Math.min(Math.max(ratio, 0.8), 1.2);\n\n// Take the more conservative option\nconst loss = Math.min(ratio * advantage, clippedRatio * advantage);",
+      "why_clipping": "Without clipping, a single good reward could cause the model to drastically change behavior, forgetting everything else. The 0.8-1.2 range (hyperparameter) limits how much a single update can change the policy.",
+      "capstone_connection": "RLHF uses PPO to fine-tune models on human preferences. If the reward favors agreement, PPO will gradually shift behavior toward sycophancy - but not too fast, which is why it's subtle and hard to detect."
+    },
+    "softmax_intuition": {
+      "name": "Softmax: Scores to Probabilities",
+      "core": "Convert any numbers into percentages that sum to 1",
+      "explanation": "Softmax takes raw scores (any numbers) and converts them to a probability distribution. High scores get high probabilities, low scores get low probabilities, and they all sum to 1. It's like ranking search results by relevance.",
+      "js_analogy": "function softmax(scores) {\n  const maxScore = Math.max(...scores);  // Numerical stability trick\n  const exps = scores.map(s => Math.exp(s - maxScore));\n  const sum = exps.reduce((a, b) => a + b);\n  return exps.map(e => e / sum);\n}\n\n// Example\nsoftmax([2, 1, 0.5]);  // [0.59, 0.24, 0.17] - sums to 1!",
+      "why_exp": "We use exp() because: 1) it makes all values positive, 2) it exaggerates differences (exp(10) >> exp(5)), 3) it's mathematically nice for gradients.",
+      "capstone_connection": "In attention, softmax determines how much weight each token gets. Understanding it helps interpret attention patterns in sycophancy analysis."
+    },
+    "backprop_chain_rule": {
+      "name": "Backprop: Tracing Errors Backward",
+      "core": "Each layer knows how to pass errors backward to its inputs",
+      "explanation": "When you call loss.backward(), PyTorch asks each operation: 'Given the error in your output, what's the error in your inputs?' Each operation has a backward rule. For y = x * 2, if output error is 5, input error is 5 * 2 = 10. Chain them together and errors flow from loss all the way to the first layer.",
+      "js_analogy": "// Simplified autograd\nclass Multiply {\n  forward(x, y) {\n    this.x = x; this.y = y;\n    return x * y;\n  }\n  backward(outputGrad) {\n    return { xGrad: outputGrad * this.y, yGrad: outputGrad * this.x };\n  }\n}\n\n// Chain: a = 3, b = 4, c = a * b, loss = c * 2\n// loss.backward() -> c gets grad 2 -> a gets grad 2*4=8, b gets grad 2*3=6",
+      "math_connection": "This is the chain rule: d(loss)/d(x) = d(loss)/d(y) * d(y)/d(x). Each layer computes its local derivative and multiplies by the incoming gradient.",
+      "capstone_connection": "Backprop is how human preference (reward signal) becomes model behavior. The gradient routes the reward signal through every layer, adjusting weights to increase future reward."
     }
   },
   "real_world_context": {
@@ -124,8 +180,16 @@
             "Understand computational graphs",
             "Build simple autograd system"
           ],
-          "worked_examples": ["Chain rule on single variable", "Backward function pattern", "Full computational graph gradient flow"],
-          "capstone_connection": "Backprop is how human preference becomes model behavior; understanding it explains sycophancy emergence"
+          "worked_examples": [
+            "Chain rule on single variable: d(f∘g)/dx = df/dg × dg/dx",
+            "Backward function pattern: each op stores inputs, computes local gradient",
+            "Full computational graph gradient flow with multiple paths"
+          ],
+          "code_snippet": "# Simple autograd: each operation knows its backward rule\nclass Multiply:\n    def forward(self, x, y):\n        self.x, self.y = x, y\n        return x * y\n    \n    def backward(self, grad_output):\n        # d(x*y)/dx = y, d(x*y)/dy = x\n        return grad_output * self.y, grad_output * self.x\n\n# Chain: loss = (a * b) * c\n# loss.backward() sends grad=1 to (a*b)*c\n# which sends grad=c to (a*b), grad=(a*b) to c\n# which sends grad=c*b to a, grad=c*a to b",
+          "deep_explanation": "Backprop answers: 'How much did each weight contribute to the error?' The chain rule lets us decompose this: if y = f(g(x)), then dy/dx = dy/dg × dg/dx. Each layer computes its LOCAL gradient (how output changes with input), then multiplies by the INCOMING gradient (how loss changes with output). This 'chains' all the way back to the first weight.",
+          "math_intuition": "Why does gradient descent work? Locally, any smooth function looks linear: f(x + ε) ≈ f(x) + ε × f'(x). The gradient tells us: 'Moving in direction g changes f by approximately g⋅∇f.' To decrease f, move opposite to ∇f. This is why negative gradient = steepest descent.",
+          "js_analogy": "Like tracing a bug through function calls: error() calls validate() calls parse() calls fetch(). Each function knows 'if my output is wrong by δ, my input was wrong by δ × (my sensitivity)'. Multiply the sensitivities and you know how the original fetch() affected the final error.",
+          "capstone_connection": "Backprop is how human preference becomes model behavior. The reward signal flows backward through every layer, adjusting weights. If reward favors agreement, gradients will push ALL weights toward generating agreeable responses."
         }
       ],
       "milestone": {
@@ -160,7 +224,14 @@
             "Understand attention mechanism deeply",
             "Load and verify pretrained weights"
           ],
-          "capstone_connection": "You need to understand how transformers work to analyze what they're doing"
+          "worked_examples": [
+            "Single attention head with explicit Q/K/V projections",
+            "Multi-head attention combining multiple perspectives",
+            "Full GPT-2 block with layer norm and residuals"
+          ],
+          "code_snippet": "# Single attention head - the core mechanism\ndef attention(Q, K, V, mask=None):\n    d_k = Q.shape[-1]\n    scores = Q @ K.transpose(-2, -1) / math.sqrt(d_k)\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, -1e9)\n    weights = F.softmax(scores, dim=-1)\n    return weights @ V\n\n# Q, K, V come from the same input, projected differently\nQ = input @ W_Q  # What am I looking for?\nK = input @ W_K  # What do I contain?\nV = input @ W_V  # What do I return?",
+          "deep_explanation": "Attention lets each token 'look at' every other token and decide what's relevant. The Query asks 'what am I looking for?', Keys answer 'what do I have?', and Values contain 'what should I return?'. The softmax creates a weighted average - tokens with high Q·K scores get more weight in the output.",
+          "capstone_connection": "You need to understand how transformers work to analyze what they're doing. Sycophancy might live in how attention weights user sentiment vs factual tokens."
         },
         {
           "id": "1.2",
@@ -172,8 +243,15 @@
             "Identify induction heads",
             "Perform logit attribution"
           ],
-          "capstone_connection": "Apply these tools to compare activations on truthful vs sycophantic responses",
-          "code_snippet": "from transformer_lens import HookedTransformer\n\nmodel = HookedTransformer.from_pretrained('gpt2-small')\nlogits, cache = model.run_with_cache(prompt)"
+          "worked_examples": [
+            "Extract attention patterns for a specific head",
+            "Compute which tokens most influenced the final prediction",
+            "Visualize attention as a heatmap"
+          ],
+          "code_snippet": "from transformer_lens import HookedTransformer\n\nmodel = HookedTransformer.from_pretrained('gpt2-small')\nlogits, cache = model.run_with_cache(prompt)\n\n# Extract attention pattern from layer 5, head 3\nattn_pattern = cache['pattern', 5][:, 3]  # (batch, seq, seq)\n\n# Which tokens contributed most to final prediction?\nfinal_residual = cache['resid_post', -1][:, -1]  # Last token\nlogit_attribution = final_residual @ model.W_U  # Project to vocab",
+          "deep_explanation": "Mechanistic interpretability treats the model as a circuit to reverse-engineer. TransformerLens lets you 'hook' into any layer and extract activations. By comparing activations across different inputs, you can identify which components respond to specific features.",
+          "js_analogy": "Like adding console.log() at every step: cache gives you the 'state' at every layer. You can then analyze: 'When the model saw user agreement, which attention heads activated differently?'",
+          "capstone_connection": "Apply these tools to compare activations on truthful vs sycophantic responses. If certain heads activate differently when the user is wrong, that's a sycophancy signal."
         },
         {
           "id": "1.3",
@@ -185,7 +263,15 @@
             "Train sparse autoencoders",
             "Interpret SAE features"
           ],
-          "capstone_connection": "Is 'user preference' a separate feature from 'truth'? SAEs might reveal this"
+          "worked_examples": [
+            "Visualize how 10 features can fit in 5 dimensions",
+            "Train SAE to extract interpretable features from MLP activations",
+            "Find features that correspond to specific concepts"
+          ],
+          "code_snippet": "# Superposition: models store more features than dimensions\n# If features are sparse (rarely active together), they can share space\n\n# SAE extracts interpretable directions\nclass SparseAutoencoder(nn.Module):\n    def __init__(self, d_model, d_hidden):\n        self.encode = nn.Linear(d_model, d_hidden)  # Expand\n        self.decode = nn.Linear(d_hidden, d_model)  # Contract\n    \n    def forward(self, x):\n        features = F.relu(self.encode(x))  # Sparse features\n        reconstruction = self.decode(features)\n        return reconstruction, features",
+          "deep_explanation": "Models pack more concepts than they have dimensions - this is superposition. A 768-dim vector might represent thousands of features, but they rarely activate together. Sparse Autoencoders (SAEs) try to 'unpack' these into interpretable features. Each SAE neuron might correspond to a concept like 'positive sentiment' or 'code-related'.",
+          "js_analogy": "Like compression: you can store 1000 emojis in a small array if you know only 10 will ever be used at once. SAEs help us decompress the model's internal 'emoji encoding' into human-readable features.",
+          "capstone_connection": "Is 'user preference' a separate feature from 'truth'? SAEs might reveal this. If we find separate features for 'agreeing with user' and 'being accurate', we can study how the model balances them."
         },
         {
           "id": "1.4",
@@ -197,7 +283,15 @@
             "Perform path patching",
             "Identify circuit components"
           ],
-          "capstone_connection": "Use these techniques to find 'sycophancy circuit' analogous to IOI circuit"
+          "worked_examples": [
+            "Activation patching: swap activations between prompts to find causal components",
+            "Path patching: trace how information flows through the network",
+            "Map the complete Indirect Object Identification circuit"
+          ],
+          "code_snippet": "# Activation patching: 'What happens if I replace this activation?'\ndef patch_activation(model, clean_prompt, corrupt_prompt, layer, pos):\n    # Run corrupt prompt\n    _, corrupt_cache = model.run_with_cache(corrupt_prompt)\n    \n    # Run clean prompt, but patch in corrupt activation at (layer, pos)\n    def patch_hook(activation, hook):\n        activation[:, pos] = corrupt_cache[hook.name][:, pos]\n        return activation\n    \n    patched_logits = model.run_with_hooks(\n        clean_prompt,\n        fwd_hooks=[(f'blocks.{layer}.hook_resid_post', patch_hook)]\n    )\n    return patched_logits",
+          "deep_explanation": "The IOI (Indirect Object Identification) task is: 'When Mary and John went to the store, John gave a drink to __'. The model should predict 'Mary'. By patching activations, we found specific heads that: 1) identify the indirect object position, 2) copy the name to that position. This is circuit analysis - finding the 'code' that implements a behavior.",
+          "js_analogy": "Like debugging by swapping function outputs: 'What if this function returned different data?' If the output changes dramatically, that function is causally important for the behavior.",
+          "capstone_connection": "Use these techniques to find a 'sycophancy circuit' analogous to IOI circuit. Which heads activate when the model agrees with a wrong user vs disagrees with a wrong user? Patching can reveal the causal mechanism."
         }
       ],
       "milestone": {
@@ -256,7 +350,15 @@
             "Understand policy gradient theorem",
             "Train CartPole agent"
           ],
-          "capstone_connection": "PPO is used in RLHF; understanding it is prerequisite"
+          "worked_examples": [
+            "Simple policy gradient: increase probability of good actions",
+            "Why vanilla policy gradient is unstable",
+            "PPO clipping prevents catastrophic updates"
+          ],
+          "code_snippet": "# PPO core idea: don't change too much at once\nold_probs = policy_old(states).detach()\nnew_probs = policy_new(states)\n\nratio = new_probs / old_probs  # How different is new policy?\n\n# Clip to prevent extreme updates\nclipped_ratio = torch.clamp(ratio, 0.8, 1.2)\n\n# Take the more conservative loss\nloss = -torch.min(ratio * advantages, clipped_ratio * advantages).mean()",
+          "deep_explanation": "Policy gradient says: 'If action A led to good reward, increase P(A).' But naive updates are unstable - one good episode could drastically change the policy, causing it to forget everything else. PPO clips the update: even if an action looks amazing, we only increase its probability by at most 20% per update. This keeps training stable.",
+          "js_analogy": "Like version control for your policy: you can only change 20% per commit. Even if you think a huge rewrite is better, you're forced to do it gradually. This prevents 'I broke everything and can't go back.'",
+          "capstone_connection": "PPO is used in RLHF to fine-tune language models on human preferences. If the preference data rewards sycophancy, PPO will gradually (but stably) move the model toward sycophantic behavior."
         },
         {
           "id": "2.4",
@@ -268,7 +370,15 @@
             "Fine-tune with human feedback",
             "Understand reward hacking"
           ],
-          "capstone_connection": "Test if different reward designs reduce sycophancy"
+          "worked_examples": [
+            "Train a reward model to predict human preferences",
+            "Use PPO to optimize the language model against the reward model",
+            "Observe reward hacking behavior emerge"
+          ],
+          "code_snippet": "# RLHF: Three stages\n# 1. Supervised fine-tuning (already done)\n# 2. Train reward model\nclass RewardModel(nn.Module):\n    def forward(self, response):\n        return self.head(self.lm(response).last_hidden_state[:, -1])\n\n# 3. PPO against reward model\nfor prompt in prompts:\n    response = policy.generate(prompt)\n    reward = reward_model(response)\n    # PPO update to increase P(response) proportional to reward",
+          "deep_explanation": "RLHF has three phases: 1) SFT - teach the model to follow instructions, 2) Reward Model - train a model to predict which responses humans prefer, 3) PPO - optimize the LM to maximize reward model scores. The key insight: if humans prefer agreeable responses even when wrong, the reward model learns to score agreement highly, and PPO optimizes for agreement. This is how sycophancy emerges.",
+          "js_analogy": "Like A/B testing gone wrong: you train an ML model to predict which version users click (reward model), then optimize your product to maximize clicks (PPO). If users click on misleading headlines, you've trained yourself to write misleading headlines.",
+          "capstone_connection": "Test if different reward designs reduce sycophancy. What if we train the reward model on 'helpfulness' rather than 'approval'? What if we add a penalty for agreeing with factually wrong users?"
         }
       ],
       "milestone": {

@@ -91,6 +91,7 @@ function chunkCurriculum(curriculum) {
   // Add mental models (object with keys like 'collapse', 'thermostat', etc.)
   if (curriculum.mental_models) {
     Object.entries(curriculum.mental_models).forEach(([key, mm]) => {
+      // Core mental model chunk
       chunks.push({
         id: `mental-model-${key}`,
         text: `Mental Model: ${mm.name}. Core insight: ${mm.core}. Arena application: ${mm.arena || mm.application || ''}`,
@@ -102,7 +103,145 @@ function chunkCurriculum(curriculum) {
           section: -1,
         }
       });
+
+      // Deep explanation (if present)
+      if (mm.deep_explanation) {
+        chunks.push({
+          id: `mental-model-${key}-deep`,
+          text: `${mm.name} - Deep Explanation: ${mm.deep_explanation}`,
+          metadata: {
+            type: 'mental_model_deep',
+            name: mm.name,
+            key: key,
+            chapter: -1,
+            section: -1,
+          }
+        });
+      }
+
+      // JavaScript analogy (for bootcamp devs)
+      if (mm.js_analogy) {
+        chunks.push({
+          id: `mental-model-${key}-js`,
+          text: `${mm.name} - JavaScript Analogy: ${mm.js_analogy}`,
+          metadata: {
+            type: 'js_analogy',
+            name: mm.name,
+            key: key,
+            chapter: -1,
+            section: -1,
+          }
+        });
+      }
+
+      // Unified view / progression (for relationships)
+      if (mm.unified_view) {
+        chunks.push({
+          id: `mental-model-${key}-unified`,
+          text: `How Mental Models Connect: ${mm.unified_view}`,
+          metadata: {
+            type: 'mental_model_synthesis',
+            name: mm.name,
+            key: key,
+            chapter: -1,
+            section: -1,
+          }
+        });
+      }
     });
+  }
+
+  // Add supplementary concepts (Q/K/V intuition, numerical gradients, etc.)
+  if (curriculum.supplementary_concepts) {
+    Object.entries(curriculum.supplementary_concepts).forEach(([key, concept]) => {
+      // Main explanation
+      chunks.push({
+        id: `concept-${key}`,
+        text: `${concept.name}: ${concept.core}. ${concept.explanation}`,
+        metadata: {
+          type: 'supplementary_concept',
+          key: key,
+          name: concept.name,
+          chapter: -1,
+          section: -1,
+        }
+      });
+
+      // JavaScript analogy
+      if (concept.js_analogy) {
+        chunks.push({
+          id: `concept-${key}-js`,
+          text: `${concept.name} - JavaScript Code: ${concept.js_analogy}`,
+          metadata: {
+            type: 'js_analogy',
+            key: key,
+            name: concept.name,
+            chapter: -1,
+            section: -1,
+          }
+        });
+      }
+
+      // Math intuition (for CS undergrads)
+      if (concept.math_intuition) {
+        chunks.push({
+          id: `concept-${key}-math`,
+          text: `${concept.name} - Mathematical Intuition: ${concept.math_intuition}`,
+          metadata: {
+            type: 'math_intuition',
+            key: key,
+            name: concept.name,
+            chapter: -1,
+            section: -1,
+          }
+        });
+      }
+
+      // Capstone connection
+      if (concept.capstone_connection) {
+        chunks.push({
+          id: `concept-${key}-capstone`,
+          text: `${concept.name} for Sycophancy Detection: ${concept.capstone_connection}`,
+          metadata: {
+            type: 'capstone_connection',
+            key: key,
+            name: concept.name,
+            chapter: -1,
+            section: -1,
+          }
+        });
+      }
+    });
+  }
+
+  // Add real-world context (ICE/Palantir case, sycophancy spectrum)
+  if (curriculum.real_world_context) {
+    const rwc = curriculum.real_world_context;
+    if (rwc.primary_case) {
+      chunks.push({
+        id: 'real-world-case',
+        text: `Real-World Sycophancy Case: ${rwc.primary_case.title}. ${rwc.primary_case.description}. Alignment Lesson: ${rwc.primary_case.alignment_lesson}`,
+        metadata: {
+          type: 'real_world_context',
+          chapter: -1,
+          section: -1,
+        }
+      });
+    }
+    if (rwc.sycophancy_spectrum) {
+      const spectrum = rwc.sycophancy_spectrum.map(l =>
+        `Level ${l.level} (${l.name}): ${l.severity} severity - ${l.harm}`
+      ).join('. ');
+      chunks.push({
+        id: 'sycophancy-spectrum',
+        text: `Sycophancy Danger Spectrum: ${spectrum}`,
+        metadata: {
+          type: 'real_world_context',
+          chapter: -1,
+          section: -1,
+        }
+      });
+    }
   }
 
   // Add chapter content
@@ -194,6 +333,45 @@ function chunkCurriculum(curriculum) {
             }
           });
         }
+      }
+
+      // Deep explanation (expanded content for understanding)
+      if (section.deep_explanation) {
+        chunks.push({
+          id: `ch${chIdx}-sec${secIdx}-deep`,
+          text: `${sectionPrefix} Deep explanation: ${section.deep_explanation}`,
+          metadata: {
+            type: 'deep_explanation',
+            chapter: chIdx,
+            section: secIdx,
+          }
+        });
+      }
+
+      // JavaScript analogy (for bootcamp developers)
+      if (section.js_analogy) {
+        chunks.push({
+          id: `ch${chIdx}-sec${secIdx}-js`,
+          text: `${sectionPrefix} JavaScript analogy: ${section.js_analogy}`,
+          metadata: {
+            type: 'js_analogy',
+            chapter: chIdx,
+            section: secIdx,
+          }
+        });
+      }
+
+      // Math intuition (for CS undergrads)
+      if (section.math_intuition) {
+        chunks.push({
+          id: `ch${chIdx}-sec${secIdx}-math`,
+          text: `${sectionPrefix} Mathematical intuition: ${section.math_intuition}`,
+          metadata: {
+            type: 'math_intuition',
+            chapter: chIdx,
+            section: secIdx,
+          }
+        });
       }
     });
   });
