@@ -1,0 +1,450 @@
+{
+  "title": "ARENA 3.0: AI Safety Fundamentals",
+  "subtitle": "From Neural Networks to Safety Evaluations",
+  "capstone_domain": "Sycophancy Detection and Mitigation",
+  "mental_models": {
+    "collapse": {
+      "name": "The Collapse Model",
+      "core": "Linear compositions remain linear. Nonlinearity breaks the chain.",
+      "meadows": "Stocks without flows are dead accumulations",
+      "arena": "Without ReLU, deep networks collapse to single matrix"
+    },
+    "thermostat": {
+      "name": "The Thermostat Model",
+      "core": "Training is a balancing feedback loop seeking equilibrium.",
+      "meadows": "Balancing feedback loops seek equilibrium",
+      "arena": "Gradient descent seeks loss minimum"
+    },
+    "routing": {
+      "name": "Information Routing Model",
+      "core": "Backprop routes error signals. Vanishing gradients break the loop.",
+      "meadows": "Information flows determine system behavior",
+      "arena": "Backprop routes error through computational graph"
+    },
+    "dimensionality": {
+      "name": "The Dimensionality Model",
+      "core": "Tensor shapes are system boundaries. Einops makes boundaries explicit.",
+      "meadows": "System boundaries define what flows can cross",
+      "arena": "Tensor shapes constrain valid operations"
+    }
+  },
+  "personas": {
+    "tyla": {
+      "name": "Tyla (CS Undergrad)",
+      "profile": "3rd year CS, intermediate Python, some PyTorch from ML class",
+      "blocker": "Can do exercises but doesn't understand WHY",
+      "scaffolding": ["Explicit why before how", "Research context boxes", "Math intuition sidebars"]
+    },
+    "aaliyah": {
+      "name": "Aaliyah (Bootcamp Dev)",
+      "profile": "2-year JS developer, strong code, weak math (high school only)",
+      "blocker": "Math notation makes no sense",
+      "scaffolding": ["Code-first explanations", "JavaScript analogies", "Permission to use AI for math translation"]
+    },
+    "maneesha": {
+      "name": "Maneesha (Instructional Designer)",
+      "profile": "8 years L&D, conceptual thinker, basic Python",
+      "blocker": "Gets lost in implementation details",
+      "scaffolding": ["Meta-level insights", "Concept frameworks first", "Heavy AI assistance OK"]
+    }
+  },
+  "real_world_context": {
+    "primary_case": {
+      "title": "ICE/Palantir AI System",
+      "description": "AI systems optimized for operator satisfaction without regard for broader welfare",
+      "alignment_lesson": "Sycophancy at scale: When AI agrees with the powerful"
+    },
+    "sycophancy_spectrum": [
+      {"level": 1, "name": "Chatbot Sycophancy", "severity": "Annoying", "harm": "Reinforced misconceptions"},
+      {"level": 2, "name": "Coding Agent Sycophancy", "severity": "Dangerous", "harm": "Vulnerable software in production"},
+      {"level": 3, "name": "Research Agent Sycophancy", "severity": "Catastrophic", "harm": "AI-accelerated invalid science"},
+      {"level": 4, "name": "Institutional AI Sycophancy", "severity": "Systemic", "harm": "Scaled harm to vulnerable populations"}
+    ]
+  },
+  "chapters": [
+    {
+      "id": "ch0",
+      "title": "Chapter 0: Fundamentals",
+      "weeks": [1, 2],
+      "duration_weeks": 2,
+      "cognitive_focus": "Procedural Knowledge + Apply",
+      "capstone_question": "How do models learn to optimize for objectives?",
+      "systems_insight": "Training is a balancing feedback loop (Thermostat Model)",
+      "svg_elements": ["stocks", "feedback"],
+      "sections": [
+        {
+          "id": "0.0",
+          "title": "Prerequisites (einops/einsum)",
+          "hours": 4,
+          "mental_model": "dimensionality",
+          "learning_objectives": [
+            "Use einops.rearrange for tensor reshaping",
+            "Use einops.einsum for matrix operations",
+            "Predict output shapes from einops expressions"
+          ],
+          "worked_examples": ["rearrange flat tensor to matrix", "add batch dimension", "attention score computation"],
+          "capstone_connection": "Attention patterns use einsum heavily; mastery here enables Ch1 interpretability",
+          "code_snippet": "from einops import rearrange\n\n# Separate attention heads\nq = rearrange(q, 'b seq (heads d) -> b heads seq d', heads=8)"
+        },
+        {
+          "id": "0.2",
+          "title": "CNNs and nn.Module",
+          "hours": 6,
+          "mental_model": "collapse",
+          "learning_objectives": [
+            "Implement Linear layer from scratch",
+            "Understand parameter initialization",
+            "Build composable nn.Module classes"
+          ],
+          "worked_examples": ["Linear layer with einsum", "Weight initialization reasoning", "SimpleMLP for MNIST"],
+          "capstone_connection": "Linear layers are Q/K/V projections in transformers",
+          "code_snippet": "class Linear(nn.Module):\n    def __init__(self, in_features, out_features):\n        super().__init__()\n        self.weight = nn.Parameter(torch.randn(out_features, in_features))\n        self.bias = nn.Parameter(torch.zeros(out_features))"
+        },
+        {
+          "id": "0.3",
+          "title": "Optimization",
+          "hours": 4,
+          "mental_model": "thermostat",
+          "learning_objectives": [
+            "Implement training loop",
+            "Understand optimizer mechanics",
+            "Use learning rate scheduling"
+          ],
+          "worked_examples": ["Canonical training loop (annotated)", "Minimal 10-line training loop"],
+          "capstone_connection": "RLHF uses this loop with reward model loss; understanding training is understanding sycophancy emergence",
+          "code_snippet": "# The complete feedback loop\nfor batch in dataloader:\n    output = model(batch)           # Forward\n    loss = loss_fn(output, target)  # Measure gap\n    loss.backward()                 # Signal direction\n    optimizer.step()                # Close gap\n    optimizer.zero_grad()           # Reset"
+        },
+        {
+          "id": "0.4",
+          "title": "Backpropagation",
+          "hours": 6,
+          "mental_model": "routing",
+          "learning_objectives": [
+            "Implement backward functions for basic operations",
+            "Understand computational graphs",
+            "Build simple autograd system"
+          ],
+          "worked_examples": ["Chain rule on single variable", "Backward function pattern", "Full computational graph gradient flow"],
+          "capstone_connection": "Backprop is how human preference becomes model behavior; understanding it explains sycophancy emergence"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "Training Dynamics Analysis",
+        "deliverable": "2-page analysis + Colab notebook",
+        "requirements": [
+          "Implement sentiment classifier",
+          "Train on biased dataset (user ratings)",
+          "Document how approval bias emerges",
+          "Hypothesize implications for larger models"
+        ]
+      }
+    },
+    {
+      "id": "ch1",
+      "title": "Chapter 1: Transformer Interpretability",
+      "weeks": [3, 4, 5],
+      "duration_weeks": 3,
+      "cognitive_focus": "Analytical + Problem-Solving",
+      "capstone_question": "Can we find where sycophancy lives in the model?",
+      "systems_insight": "Information routing through attention circuits (Routing Model)",
+      "svg_elements": ["stocks", "feedback", "gradients", "tensors"],
+      "sections": [
+        {
+          "id": "1.1",
+          "title": "Transformer from Scratch",
+          "hours": 8,
+          "mental_model": "collapse",
+          "learning_objectives": [
+            "Implement full transformer architecture",
+            "Understand attention mechanism deeply",
+            "Load and verify pretrained weights"
+          ],
+          "capstone_connection": "You need to understand how transformers work to analyze what they're doing"
+        },
+        {
+          "id": "1.2",
+          "title": "Intro to Mech Interp",
+          "hours": 8,
+          "mental_model": "routing",
+          "learning_objectives": [
+            "Use TransformerLens for activation access",
+            "Identify induction heads",
+            "Perform logit attribution"
+          ],
+          "capstone_connection": "Apply these tools to compare activations on truthful vs sycophantic responses",
+          "code_snippet": "from transformer_lens import HookedTransformer\n\nmodel = HookedTransformer.from_pretrained('gpt2-small')\nlogits, cache = model.run_with_cache(prompt)"
+        },
+        {
+          "id": "1.3",
+          "title": "Superposition & SAEs",
+          "hours": 6,
+          "mental_model": "dimensionality",
+          "learning_objectives": [
+            "Understand superposition concept",
+            "Train sparse autoencoders",
+            "Interpret SAE features"
+          ],
+          "capstone_connection": "Is 'user preference' a separate feature from 'truth'? SAEs might reveal this"
+        },
+        {
+          "id": "1.4",
+          "title": "IOI Circuit",
+          "hours": 8,
+          "mental_model": "routing",
+          "learning_objectives": [
+            "Perform activation patching",
+            "Perform path patching",
+            "Identify circuit components"
+          ],
+          "capstone_connection": "Use these techniques to find 'sycophancy circuit' analogous to IOI circuit"
+        }
+      ],
+      "milestone": {
+        "number": 2,
+        "title": "Mechanistic Sycophancy Hypothesis",
+        "deliverable": "4-page analysis + Colab notebook + visualizations",
+        "requirements": [
+          "Apply TransformerLens to sycophancy-relevant prompts",
+          "Compare activations: truthful vs agreeable responses",
+          "Identify candidate components",
+          "Form testable hypothesis"
+        ]
+      }
+    },
+    {
+      "id": "ch2",
+      "title": "Chapter 2: Reinforcement Learning",
+      "weeks": [6, 7],
+      "duration_weeks": 2,
+      "cognitive_focus": "Applied Methods",
+      "capstone_question": "Can we train out sycophancy?",
+      "systems_insight": "Feedback loops shape behavior over time (Thermostat + Routing)",
+      "svg_elements": ["stocks", "feedback", "gradients", "tensors", "hierarchy"],
+      "sections": [
+        {
+          "id": "2.1",
+          "title": "Intro to RL",
+          "hours": 4,
+          "mental_model": "thermostat",
+          "learning_objectives": [
+            "Understand reward optimization",
+            "Implement multi-armed bandit",
+            "Understand exploration vs exploitation"
+          ],
+          "capstone_connection": "If reward is 'user approval', what behavior emerges?"
+        },
+        {
+          "id": "2.2",
+          "title": "DQN",
+          "hours": 4,
+          "mental_model": "thermostat",
+          "learning_objectives": [
+            "Implement Deep Q-Network",
+            "Understand experience replay",
+            "Train agent on simple environment"
+          ],
+          "capstone_connection": "Foundation for understanding policy gradient methods"
+        },
+        {
+          "id": "2.3",
+          "title": "PPO",
+          "hours": 6,
+          "mental_model": "thermostat",
+          "learning_objectives": [
+            "Implement Proximal Policy Optimization",
+            "Understand policy gradient theorem",
+            "Train CartPole agent"
+          ],
+          "capstone_connection": "PPO is used in RLHF; understanding it is prerequisite"
+        },
+        {
+          "id": "2.4",
+          "title": "RLHF",
+          "hours": 8,
+          "mental_model": "thermostat",
+          "learning_objectives": [
+            "Implement reward modeling",
+            "Fine-tune with human feedback",
+            "Understand reward hacking"
+          ],
+          "capstone_connection": "Test if different reward designs reduce sycophancy"
+        }
+      ],
+      "milestone": {
+        "number": 3,
+        "title": "Anti-Sycophancy Training Experiment",
+        "deliverable": "4-page analysis + before/after comparisons",
+        "requirements": [
+          "Design reward that penalizes agreement with wrong user",
+          "Implement mini-RLHF with this reward",
+          "Compare behavior before/after",
+          "Document tradeoffs"
+        ]
+      }
+    },
+    {
+      "id": "ch3",
+      "title": "Chapter 3: LLM Evaluations",
+      "weeks": [8, 9],
+      "duration_weeks": 2,
+      "cognitive_focus": "Synthesis & Evaluation",
+      "capstone_question": "How do we measure sycophancy rigorously?",
+      "systems_insight": "System boundaries and hierarchies (Dimensionality Model)",
+      "svg_elements": ["stocks", "feedback", "gradients", "tensors", "hierarchy", "hooks"],
+      "sections": [
+        {
+          "id": "3.1",
+          "title": "Intro to Evals",
+          "hours": 4,
+          "mental_model": "dimensionality",
+          "learning_objectives": [
+            "Understand eval design principles",
+            "Create MCQ benchmarks",
+            "Avoid common eval pitfalls"
+          ],
+          "capstone_connection": "Design robust sycophancy eval that distinguishes from helpfulness"
+        },
+        {
+          "id": "3.2",
+          "title": "Dataset Generation",
+          "hours": 4,
+          "mental_model": "dimensionality",
+          "learning_objectives": [
+            "Generate test cases with LLMs",
+            "Balance dataset coverage",
+            "Validate dataset quality"
+          ],
+          "capstone_connection": "Generate scenarios where sycophancy is dangerous"
+        },
+        {
+          "id": "3.3",
+          "title": "Inspect Framework",
+          "hours": 4,
+          "mental_model": "routing",
+          "learning_objectives": [
+            "Use UK AISI's Inspect library",
+            "Run systematic evaluations",
+            "Analyze evaluation results"
+          ],
+          "capstone_connection": "Run sycophancy eval systematically"
+        },
+        {
+          "id": "3.4",
+          "title": "LLM Agents",
+          "hours": 6,
+          "mental_model": "routing",
+          "learning_objectives": [
+            "Build agent with ReAct pattern",
+            "Implement tool use",
+            "Evaluate agent capabilities"
+          ],
+          "capstone_connection": "Test if coding agents sycophantically ignore security issues"
+        }
+      ],
+      "milestone": {
+        "number": 4,
+        "title": "Complete Sycophancy Evaluation Suite",
+        "deliverable": "10-page report + dataset release",
+        "requirements": [
+          "MCQ benchmark (100+ items)",
+          "Agent evaluation for multi-turn scenarios",
+          "Institutional analysis (ImmigrationOS-style systems)",
+          "Findings report with recommendations"
+        ]
+      }
+    }
+  ],
+  "weeks_legacy": [
+    {
+      "id": 1,
+      "chapter": "ch0",
+      "title": "Structure Determines Behavior",
+      "theme": "The Collapse Model",
+      "assessment": {
+        "question": "What makes neural networks more powerful than linear regression?",
+        "answer": "Nonlinearity. By composing linear and nonlinear transformations, we can learn basically anything."
+      }
+    },
+    {
+      "id": 2,
+      "chapter": "ch0",
+      "title": "The Feedback Loop",
+      "theme": "The Thermostat Model",
+      "assessment": {
+        "question": "What is a loss function? What does it take for arguments, and what does it return?",
+        "answer": "A loss function measures the gap between prediction and target. Returns a scalar indicating how wrong we are."
+      }
+    },
+    {
+      "id": 3,
+      "chapter": "ch1",
+      "title": "Information Routing",
+      "theme": "The Information Routing Model",
+      "assessment": {
+        "question": "When you call .backward(), where are your gradients stored?",
+        "answer": "In the .grad attribute of each nn.Parameter. This is the signal waiting to be applied by the optimizer."
+      }
+    },
+    {
+      "id": 4,
+      "chapter": "ch1",
+      "title": "Tensor Manipulation",
+      "theme": "The Dimensionality Model",
+      "assessment": {
+        "question": "Can you calculate the shape of A @ B where A is (batch, seq, d_model) and B is (d_model, d_head)?",
+        "answer": "(batch, seq, d_head) - matrix multiplication contracts the inner dimension."
+      }
+    },
+    {
+      "id": 5,
+      "chapter": "ch1",
+      "title": "Hierarchies & Subassemblies",
+      "theme": "Hora's Watch",
+      "assessment": {
+        "question": "What is nn.Parameter and nn.Module? Why must parameters be registered in __init__?",
+        "answer": "nn.Module is a container for parameters. Parameters in __init__ are automatically tracked. Unregistered weights are invisible to the feedback loop."
+      }
+    },
+    {
+      "id": 6,
+      "chapter": "ch2",
+      "title": "Reward Optimization",
+      "theme": "The Thermostat Model (RL)",
+      "assessment": {
+        "question": "If a model is trained to maximize user approval ratings, what behavior might emerge?",
+        "answer": "Sycophancy - the model learns to tell users what they want to hear, not what's true."
+      }
+    },
+    {
+      "id": 7,
+      "chapter": "ch2",
+      "title": "RLHF Deep Dive",
+      "theme": "Shaping Feedback Loops",
+      "assessment": {
+        "question": "How does reward hacking relate to sycophancy?",
+        "answer": "Both involve the model finding unintended ways to maximize reward that don't align with true goals."
+      }
+    },
+    {
+      "id": 8,
+      "chapter": "ch3",
+      "title": "Eval Design",
+      "theme": "The Dimensionality Model (Boundaries)",
+      "assessment": {
+        "question": "How do you distinguish sycophancy from helpfulness in an evaluation?",
+        "answer": "Test cases where being helpful requires disagreeing with the user. True helpfulness says 'no' when appropriate."
+      }
+    },
+    {
+      "id": 9,
+      "chapter": "ch3",
+      "title": "Opening the Black Box",
+      "theme": "Circuit Tracing",
+      "assessment": {
+        "question": "How do induction heads allow the model to perform in-context learning?",
+        "answer": "They copy patterns from earlier in the context. Using hooks, we can trace this information routing in action."
+      }
+    }
+  ]
+}

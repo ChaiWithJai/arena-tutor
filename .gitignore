@@ -1,0 +1,15 @@
+# Environment
+.env
+.env.local
+
+# Dependencies
+node_modules/
+
+# OS
+.DS_Store
+
+# Embeddings cache (regenerate with: node server/embeddings.js)
+# data/embeddings.json
+
+# Logs
+*.log

@@ -1,0 +1,649 @@
+{
+  "meta": {
+    "generated": "2026-02-04",
+    "purpose": "Compare curriculum assessment design vs tutor implementation",
+    "framework": "Gagné's Nine Events + CDF Methodology"
+  },
+
+  "gagne_coverage": {
+    "summary": "Tutor covers Events 1,3,5,7 partially. Events 2,4,6,8,9 have major gaps.",
+    "events": {
+      "1_gain_attention": {
+        "status": "partial",
+        "designed": "Capstone hook (sycophancy), real-world context (ICE/Palantir)",
+        "implemented": "Capstone mentioned in responses, visual network diagram",
+        "gap": "No personalized attention hooks based on learner profile"
+      },
+      "2_inform_objectives": {
+        "status": "missing",
+        "designed": "Clear learning objectives per section (38 total)",
+        "implemented": "Objectives in RAG chunks but not surfaced to learner",
+        "gap": "No explicit 'here's what you'll learn' before each section"
+      },
+      "3_stimulate_prior_knowledge": {
+        "status": "partial",
+        "designed": "Mental models as bridges (Collapse, Thermostat, Routing, Dimensionality)",
+        "implemented": "Mental models in RAG context, referenced in responses",
+        "gap": "No diagnostic to check prerequisite knowledge before section"
+      },
+      "4_present_content": {
+        "status": "external",
+        "designed": "ARENA curriculum content (Colab notebooks)",
+        "implemented": "RAG retrieval of summaries, not full content",
+        "gap": "Content lives externally; tutor is supplement not primary"
+      },
+      "5_provide_learning_guidance": {
+        "status": "partial",
+        "designed": "Worked examples (22 total), code snippets",
+        "implemented": "Worked examples in RAG, code snippets in responses",
+        "gap": "No guided walkthrough; examples are passive not interactive"
+      },
+      "6_elicit_performance": {
+        "status": "missing",
+        "designed": "Practice problems, Colab exercises, milestones",
+        "implemented": "Chat only; no practice generation or tracking",
+        "gap": "No 'now you try' prompts or practice problem generation"
+      },
+      "7_provide_feedback": {
+        "status": "partial",
+        "designed": "Formative feedback on learner work",
+        "implemented": "Chat can answer questions about learner's code",
+        "gap": "No structured feedback on submitted work artifacts"
+      },
+      "8_assess_performance": {
+        "status": "missing",
+        "designed": "Weekly assessments (9), chapter milestones (4)",
+        "implemented": "None",
+        "gap": "No assessment delivery, tracking, or verification"
+      },
+      "9_enhance_transfer": {
+        "status": "missing",
+        "designed": "Capstone project, real-world scenarios (sycophancy spectrum)",
+        "implemented": "Capstone connections in responses",
+        "gap": "No transfer scenarios, no application to novel contexts"
+      }
+    }
+  },
+
+  "course_level": {
+    "designed": {
+      "capstone_domain": "Sycophancy Detection and Mitigation",
+      "duration_weeks": 9,
+      "total_hours": 80,
+      "final_deliverable": {
+        "milestone_4": "Complete Sycophancy Evaluation Suite",
+        "components": [
+          "MCQ benchmark (100+ items)",
+          "Agent evaluation for multi-turn scenarios",
+          "Institutional analysis",
+          "10-page findings report"
+        ]
+      },
+      "success_criteria": "Learner can design, implement, and interpret sycophancy evaluations"
+    },
+    "implemented": {
+      "capstone_tracking": false,
+      "progress_persistence": false,
+      "deliverable_submission": false,
+      "completion_verification": false
+    },
+    "gap": {
+      "missing": [
+        "Course progress dashboard",
+        "Milestone submission system",
+        "Capstone project workspace",
+        "Completion certificate logic"
+      ],
+      "severity": "critical",
+      "impact": "Cannot verify course completion or capstone mastery"
+    }
+  },
+
+  "module_level": {
+    "chapters": [
+      {
+        "id": "ch0",
+        "title": "Fundamentals",
+        "designed": {
+          "weeks": [1, 2],
+          "hours": 20,
+          "sections": 4,
+          "learning_objectives": 12,
+          "milestone": {
+            "title": "Training Dynamics Analysis",
+            "deliverable": "2-page analysis + Colab notebook",
+            "requirements": [
+              "Implement sentiment classifier",
+              "Train on biased dataset",
+              "Document approval bias emergence",
+              "Hypothesize implications"
+            ]
+          }
+        },
+        "implemented": {
+          "rag_chunks": 26,
+          "chunk_types": ["learning_objective", "worked_example", "code_snippet", "capstone_connection", "mental_model_usage"],
+          "milestone_tracking": false,
+          "section_completion": false
+        },
+        "gap": {
+          "missing": [
+            "Section completion checkboxes",
+            "Milestone submission form",
+            "Notebook validation",
+            "Peer review workflow"
+          ]
+        }
+      },
+      {
+        "id": "ch1",
+        "title": "Transformer Interpretability",
+        "designed": {
+          "weeks": [3, 4, 5],
+          "hours": 30,
+          "sections": 4,
+          "learning_objectives": 12,
+          "milestone": {
+            "title": "Mechanistic Sycophancy Hypothesis",
+            "deliverable": "4-page analysis + Colab + visualizations",
+            "requirements": [
+              "Apply TransformerLens to sycophancy prompts",
+              "Compare activations",
+              "Identify candidate components",
+              "Form testable hypothesis"
+            ]
+          }
+        },
+        "implemented": {
+          "rag_chunks": 21,
+          "chunk_types": ["learning_objective", "code_snippet", "capstone_connection", "mental_model_usage"],
+          "milestone_tracking": false,
+          "section_completion": false
+        },
+        "gap": {
+          "missing": [
+            "TransformerLens integration",
+            "Visualization generation",
+            "Hypothesis template",
+            "Activation comparison tools"
+          ]
+        }
+      },
+      {
+        "id": "ch2",
+        "title": "Reinforcement Learning",
+        "designed": {
+          "weeks": [6, 7],
+          "hours": 22,
+          "sections": 4,
+          "learning_objectives": 12,
+          "milestone": {
+            "title": "Anti-Sycophancy Training Experiment",
+            "deliverable": "4-page analysis + before/after comparisons",
+            "requirements": [
+              "Design penalty reward",
+              "Implement mini-RLHF",
+              "Compare behavior",
+              "Document tradeoffs"
+            ]
+          }
+        },
+        "implemented": {
+          "rag_chunks": 24,
+          "chunk_types": ["learning_objective", "worked_example", "capstone_connection", "mental_model_usage"],
+          "milestone_tracking": false,
+          "section_completion": false
+        },
+        "gap": {
+          "missing": [
+            "RLHF experiment sandbox",
+            "Before/after comparison UI",
+            "Reward design templates",
+            "Training run logging"
+          ]
+        }
+      },
+      {
+        "id": "ch3",
+        "title": "LLM Evaluations",
+        "designed": {
+          "weeks": [8, 9],
+          "hours": 18,
+          "sections": 4,
+          "learning_objectives": 12,
+          "milestone": {
+            "title": "Complete Sycophancy Evaluation Suite",
+            "deliverable": "10-page report + dataset release",
+            "requirements": [
+              "MCQ benchmark (100+ items)",
+              "Agent evaluation",
+              "Institutional analysis",
+              "Findings report"
+            ]
+          }
+        },
+        "implemented": {
+          "rag_chunks": 18,
+          "chunk_types": ["learning_objective", "worked_example", "capstone_connection", "mental_model_usage"],
+          "milestone_tracking": false,
+          "section_completion": false
+        },
+        "gap": {
+          "missing": [
+            "Eval dataset builder",
+            "Inspect framework integration",
+            "Report templates",
+            "Dataset publishing workflow"
+          ]
+        }
+      }
+    ]
+  },
+
+  "lesson_level": {
+    "summary": {
+      "total_sections": 16,
+      "total_learning_objectives": 38,
+      "total_worked_examples": 22,
+      "total_code_snippets": 8,
+      "weekly_assessments": 9
+    },
+    "weekly_assessments": [
+      {
+        "week": 1,
+        "chapter": "ch0",
+        "theme": "The Collapse Model",
+        "designed": {
+          "question": "What makes neural networks more powerful than linear regression?",
+          "expected_answer": "Nonlinearity. By composing linear and nonlinear transformations, we can learn basically anything.",
+          "bloom_level": "understand"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 2,
+        "chapter": "ch0",
+        "theme": "The Thermostat Model",
+        "designed": {
+          "question": "What is a loss function? What does it take for arguments, and what does it return?",
+          "expected_answer": "A loss function measures the gap between prediction and target. Returns a scalar indicating how wrong we are.",
+          "bloom_level": "understand"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 3,
+        "chapter": "ch1",
+        "theme": "The Information Routing Model",
+        "designed": {
+          "question": "When you call .backward(), where are your gradients stored?",
+          "expected_answer": "In the .grad attribute of each nn.Parameter. This is the signal waiting to be applied by the optimizer.",
+          "bloom_level": "remember"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 4,
+        "chapter": "ch1",
+        "theme": "The Dimensionality Model",
+        "designed": {
+          "question": "Can you calculate the shape of A @ B where A is (batch, seq, d_model) and B is (d_model, d_head)?",
+          "expected_answer": "(batch, seq, d_head) - matrix multiplication contracts the inner dimension.",
+          "bloom_level": "apply"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 5,
+        "chapter": "ch1",
+        "theme": "Hora's Watch",
+        "designed": {
+          "question": "What is nn.Parameter and nn.Module? Why must parameters be registered in __init__?",
+          "expected_answer": "nn.Module is a container for parameters. Parameters in __init__ are automatically tracked. Unregistered weights are invisible to the feedback loop.",
+          "bloom_level": "understand"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 6,
+        "chapter": "ch2",
+        "theme": "The Thermostat Model (RL)",
+        "designed": {
+          "question": "If a model is trained to maximize user approval ratings, what behavior might emerge?",
+          "expected_answer": "Sycophancy - the model learns to tell users what they want to hear, not what's true.",
+          "bloom_level": "analyze"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 7,
+        "chapter": "ch2",
+        "theme": "Shaping Feedback Loops",
+        "designed": {
+          "question": "How does reward hacking relate to sycophancy?",
+          "expected_answer": "Both involve the model finding unintended ways to maximize reward that don't align with true goals.",
+          "bloom_level": "analyze"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 8,
+        "chapter": "ch3",
+        "theme": "The Dimensionality Model (Boundaries)",
+        "designed": {
+          "question": "How do you distinguish sycophancy from helpfulness in an evaluation?",
+          "expected_answer": "Test cases where being helpful requires disagreeing with the user. True helpfulness says 'no' when appropriate.",
+          "bloom_level": "evaluate"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      },
+      {
+        "week": 9,
+        "chapter": "ch3",
+        "theme": "Circuit Tracing",
+        "designed": {
+          "question": "How do induction heads allow the model to perform in-context learning?",
+          "expected_answer": "They copy patterns from earlier in the context. Using hooks, we can trace this information routing in action.",
+          "bloom_level": "understand"
+        },
+        "implemented": {
+          "assessment_delivered": false,
+          "answer_verified": false,
+          "rag_can_answer": true
+        }
+      }
+    ],
+    "learning_objectives_by_section": [
+      {
+        "section": "0.0",
+        "title": "Prerequisites (einops/einsum)",
+        "objectives": [
+          {"id": "LO-0.0.1", "text": "Use einops.rearrange for tensor reshaping", "bloom": "apply", "assessed": false},
+          {"id": "LO-0.0.2", "text": "Use einops.einsum for matrix operations", "bloom": "apply", "assessed": false},
+          {"id": "LO-0.0.3", "text": "Predict output shapes from einops expressions", "bloom": "apply", "assessed": false}
+        ]
+      },
+      {
+        "section": "0.2",
+        "title": "CNNs and nn.Module",
+        "objectives": [
+          {"id": "LO-0.2.1", "text": "Implement Linear layer from scratch", "bloom": "apply", "assessed": false},
+          {"id": "LO-0.2.2", "text": "Understand parameter initialization", "bloom": "understand", "assessed": false},
+          {"id": "LO-0.2.3", "text": "Build composable nn.Module classes", "bloom": "create", "assessed": false}
+        ]
+      },
+      {
+        "section": "0.3",
+        "title": "Optimization",
+        "objectives": [
+          {"id": "LO-0.3.1", "text": "Implement training loop", "bloom": "apply", "assessed": false},
+          {"id": "LO-0.3.2", "text": "Understand optimizer mechanics", "bloom": "understand", "assessed": false},
+          {"id": "LO-0.3.3", "text": "Use learning rate scheduling", "bloom": "apply", "assessed": false}
+        ]
+      },
+      {
+        "section": "0.4",
+        "title": "Backpropagation",
+        "objectives": [
+          {"id": "LO-0.4.1", "text": "Implement backward functions for basic operations", "bloom": "apply", "assessed": false},
+          {"id": "LO-0.4.2", "text": "Understand computational graphs", "bloom": "understand", "assessed": false},
+          {"id": "LO-0.4.3", "text": "Build simple autograd system", "bloom": "create", "assessed": false}
+        ]
+      },
+      {
+        "section": "1.1",
+        "title": "Transformer from Scratch",
+        "objectives": [
+          {"id": "LO-1.1.1", "text": "Implement full transformer architecture", "bloom": "create", "assessed": false},
+          {"id": "LO-1.1.2", "text": "Understand attention mechanism deeply", "bloom": "understand", "assessed": false},
+          {"id": "LO-1.1.3", "text": "Load and verify pretrained weights", "bloom": "apply", "assessed": false}
+        ]
+      },
+      {
+        "section": "1.2",
+        "title": "Intro to Mech Interp",
+        "objectives": [
+          {"id": "LO-1.2.1", "text": "Use TransformerLens for activation access", "bloom": "apply", "assessed": false},
+          {"id": "LO-1.2.2", "text": "Identify induction heads", "bloom": "analyze", "assessed": false},
+          {"id": "LO-1.2.3", "text": "Perform logit attribution", "bloom": "analyze", "assessed": false}
+        ]
+      },
+      {
+        "section": "1.3",
+        "title": "Superposition & SAEs",
+        "objectives": [
+          {"id": "LO-1.3.1", "text": "Understand superposition concept", "bloom": "understand", "assessed": false},
+          {"id": "LO-1.3.2", "text": "Train sparse autoencoders", "bloom": "apply", "assessed": false},
+          {"id": "LO-1.3.3", "text": "Interpret SAE features", "bloom": "analyze", "assessed": false}
+        ]
+      },
+      {
+        "section": "1.4",
+        "title": "IOI Circuit",
+        "objectives": [
+          {"id": "LO-1.4.1", "text": "Perform activation patching", "bloom": "apply", "assessed": false},
+          {"id": "LO-1.4.2", "text": "Perform path patching", "bloom": "apply", "assessed": false},
+          {"id": "LO-1.4.3", "text": "Identify circuit components", "bloom": "analyze", "assessed": false}
+        ]
+      },
+      {
+        "section": "2.1",
+        "title": "Intro to RL",
+        "objectives": [
+          {"id": "LO-2.1.1", "text": "Understand reward optimization", "bloom": "understand", "assessed": false},
+          {"id": "LO-2.1.2", "text": "Implement multi-armed bandit", "bloom": "apply", "assessed": false},
+          {"id": "LO-2.1.3", "text": "Understand exploration vs exploitation", "bloom": "understand", "assessed": false}
+        ]
+      },
+      {
+        "section": "2.2",
+        "title": "DQN",
+        "objectives": [
+          {"id": "LO-2.2.1", "text": "Implement Deep Q-Network", "bloom": "apply", "assessed": false},
+          {"id": "LO-2.2.2", "text": "Understand experience replay", "bloom": "understand", "assessed": false},
+          {"id": "LO-2.2.3", "text": "Train agent on simple environment", "bloom": "apply", "assessed": false}
+        ]
+      },
+      {
+        "section": "2.3",
+        "title": "PPO",
+        "objectives": [
+          {"id": "LO-2.3.1", "text": "Implement Proximal Policy Optimization", "bloom": "apply", "assessed": false},
+          {"id": "LO-2.3.2", "text": "Understand policy gradient theorem", "bloom": "understand", "assessed": false},
+          {"id": "LO-2.3.3", "text": "Train CartPole agent", "bloom": "apply", "assessed": false}
+        ]
+      },
+      {
+        "section": "2.4",
+        "title": "RLHF",
+        "objectives": [
+          {"id": "LO-2.4.1", "text": "Implement reward modeling", "bloom": "apply", "assessed": false},
+          {"id": "LO-2.4.2", "text": "Fine-tune with human feedback", "bloom": "apply", "assessed": false},
+          {"id": "LO-2.4.3", "text": "Understand reward hacking", "bloom": "understand", "assessed": false}
+        ]
+      },
+      {
+        "section": "3.1",
+        "title": "Intro to Evals",
+        "objectives": [
+          {"id": "LO-3.1.1", "text": "Understand eval design principles", "bloom": "understand", "assessed": false},
+          {"id": "LO-3.1.2", "text": "Create MCQ benchmarks", "bloom": "create", "assessed": false},
+          {"id": "LO-3.1.3", "text": "Avoid common eval pitfalls", "bloom": "evaluate", "assessed": false}
+        ]
+      },
+      {
+        "section": "3.2",
+        "title": "Dataset Generation",
+        "objectives": [
+          {"id": "LO-3.2.1", "text": "Generate test cases with LLMs", "bloom": "apply", "assessed": false},
+          {"id": "LO-3.2.2", "text": "Balance dataset coverage", "bloom": "analyze", "assessed": false},
+          {"id": "LO-3.2.3", "text": "Validate dataset quality", "bloom": "evaluate", "assessed": false}
+        ]
+      },
+      {
+        "section": "3.3",
+        "title": "Inspect Framework",
+        "objectives": [
+          {"id": "LO-3.3.1", "text": "Use UK AISI's Inspect library", "bloom": "apply", "assessed": false},
+          {"id": "LO-3.3.2", "text": "Run systematic evaluations", "bloom": "apply", "assessed": false},
+          {"id": "LO-3.3.3", "text": "Analyze evaluation results", "bloom": "analyze", "assessed": false}
+        ]
+      },
+      {
+        "section": "3.4",
+        "title": "LLM Agents",
+        "objectives": [
+          {"id": "LO-3.4.1", "text": "Build agent with ReAct pattern", "bloom": "create", "assessed": false},
+          {"id": "LO-3.4.2", "text": "Implement tool use", "bloom": "apply", "assessed": false},
+          {"id": "LO-3.4.3", "text": "Evaluate agent capabilities", "bloom": "evaluate", "assessed": false}
+        ]
+      }
+    ]
+  },
+
+  "proofs_inventory": {
+    "description": "Future feature: Evidence of deep intuitive understanding",
+    "bloom_progression": ["remember", "understand", "apply", "analyze", "evaluate", "create"],
+    "proof_types": [
+      {
+        "type": "recall",
+        "bloom": "remember",
+        "example": "Student can state the Thermostat Model without prompting",
+        "evidence": "Unprompted correct recitation in conversation"
+      },
+      {
+        "type": "explanation",
+        "bloom": "understand",
+        "example": "Student can explain WHY ReLU prevents network collapse",
+        "evidence": "Novel analogy or paraphrase, not just definition"
+      },
+      {
+        "type": "application",
+        "bloom": "apply",
+        "example": "Student correctly predicts tensor shape transformation",
+        "evidence": "Correct answer on novel problem"
+      },
+      {
+        "type": "analysis",
+        "bloom": "analyze",
+        "example": "Student identifies which mental model applies to new scenario",
+        "evidence": "Correct model selection with justification"
+      },
+      {
+        "type": "evaluation",
+        "bloom": "evaluate",
+        "example": "Student critiques a flawed sycophancy eval design",
+        "evidence": "Identifies specific flaw and proposes improvement"
+      },
+      {
+        "type": "creation",
+        "bloom": "create",
+        "example": "Student designs novel anti-sycophancy reward function",
+        "evidence": "Original design with reasoned tradeoffs"
+      }
+    ],
+    "implemented": false,
+    "requirements_for_implementation": [
+      "Proof submission API endpoint",
+      "LLM-as-judge evaluation of proof quality",
+      "Proof inventory persistence (per learner)",
+      "Progress visualization (Bloom level badges)",
+      "Spaced repetition for proof reinforcement"
+    ]
+  },
+
+  "recommendations": {
+    "priority_1_quick_wins": [
+      {
+        "feature": "Weekly Assessment Mode",
+        "effort": "low",
+        "impact": "high",
+        "description": "Add /assess command that delivers weekly question and verifies answer"
+      },
+      {
+        "feature": "Learning Objective Display",
+        "effort": "low",
+        "impact": "medium",
+        "description": "Show section objectives before diving into content"
+      },
+      {
+        "feature": "Progress Persistence",
+        "effort": "medium",
+        "impact": "high",
+        "description": "LocalStorage tracking of completed sections/assessments"
+      }
+    ],
+    "priority_2_core_features": [
+      {
+        "feature": "Proof Collection System",
+        "effort": "high",
+        "impact": "high",
+        "description": "Implement the proofs inventory with LLM verification"
+      },
+      {
+        "feature": "Milestone Submission",
+        "effort": "high",
+        "impact": "high",
+        "description": "Allow learners to submit and get feedback on milestones"
+      },
+      {
+        "feature": "Diagnostic Mode",
+        "effort": "medium",
+        "impact": "medium",
+        "description": "Pre-section quiz to identify knowledge gaps"
+      }
+    ],
+    "priority_3_advanced": [
+      {
+        "feature": "Transfer Scenarios",
+        "effort": "high",
+        "impact": "high",
+        "description": "Generate novel application scenarios for each mental model"
+      },
+      {
+        "feature": "Peer Review Workflow",
+        "effort": "high",
+        "impact": "medium",
+        "description": "Connect learners for milestone review"
+      },
+      {
+        "feature": "Adaptive Difficulty",
+        "effort": "very_high",
+        "impact": "high",
+        "description": "Adjust explanations based on proof inventory level"
+      }
+    ]
+  }
+}

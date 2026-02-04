@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARENA 3.0 Curriculum - Progressive Learning UI</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-purple: #a855f7;
+      --accent-orange: #f97316;
+      --border: #475569;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .tab.active {
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    /* Week-by-Week View */
+    .weeks-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .week {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .week-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .week-meta {
+      display: flex;
+      gap: 1rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .load-bar {
+      width: 100px;
+      height: 8px;
+      background: var(--bg-card);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .load-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-orange));
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .concept-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .concept-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-blue);
+    }
+
+    .concept-card.completed {
+      border-color: var(--accent-green);
+    }
+
+    .concept-name {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .concept-level {
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      background: var(--accent-purple);
+      border-radius: 4px;
+    }
+
+    .concept-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .concept-prereqs {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Knowledge Graph View */
+    .graph-container {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 1.5rem;
+      min-height: 600px;
+      position: relative;
+    }
+
+    #graph-canvas {
+      width: 100%;
+      height: 500px;
+    }
+
+    .graph-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* Concept Detail Panel */
+    .detail-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 400px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border);
+      padding: 2rem;
+      transform: translateX(100%);
+      transition: transform 0.3s;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .detail-panel.open {
+      transform: translateX(0);
+    }
+
+    .detail-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .detail-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-section h3 {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .prereq-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .prereq-tag {
+      padding: 0.25rem 0.75rem;
+      background: var(--bg-card);
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+
+    .learning-path {
+      padding: 1rem;
+      background: var(--bg-card);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .path-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+    }
+
+    .path-arrow {
+      color: var(--accent-blue);
+    }
+
+    /* Loading State */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Progress Summary */
+    .progress-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-card {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .progress-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .progress-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧠 ARENA 3.0 + Systems Thinking</h1>
+      <p>Progressive Curriculum for Alignment Research</p>
+    </header>
+
+    <div class="progress-summary" id="progress-summary">
+      <div class="progress-card">
+        <div class="progress-number" id="total-concepts">-</div>
+        <div class="progress-label">Total Concepts</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-number" id="total-weeks">-</div>
+        <div class="progress-label">Curriculum Weeks</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-number" id="completed-count">0</div>
+        <div class="progress-label">Completed</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-number" id="avg-load">-</div>
+        <div class="progress-label">Avg Cognitive Load</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-view="weeks">Week by Week</button>
+      <button class="tab" data-view="graph">Knowledge Graph</button>
+      <button class="tab" data-view="order">Learning Order</button>
+    </div>
+
+    <main id="main-content">
+      <div class="loading">
+        <div class="spinner"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="detail-panel" id="detail-panel">
+    <button class="detail-close" onclick="closeDetail()">×</button>
+    <div id="detail-content"></div>
+  </div>
+
+  <script>
+    // ========================================================================
+    // Virtual DOM Implementation (UI Framework Patterns)
+    // ========================================================================
+
+    function createElement(type, props, ...children) {
+      return {
+        type,
+        props: props || {},
+        children: children.flat().filter(c => c != null)
+      };
+    }
+
+    function render(vNode) {
+      if (typeof vNode === 'string' || typeof vNode === 'number') {
+        return document.createTextNode(String(vNode));
+      }
+
+      if (!vNode || !vNode.type) {
+        return document.createTextNode('');
+      }
+
+      const element = document.createElement(vNode.type);
+
+      for (const [key, value] of Object.entries(vNode.props)) {
+        if (key.startsWith('on') && typeof value === 'function') {
+          const eventName = key.slice(2).toLowerCase();
+          element.addEventListener(eventName, value);
+        } else if (key === 'className') {
+          element.className = value;
+        } else if (key === 'style' && typeof value === 'object') {
+          Object.assign(element.style, value);
+        } else if (value !== false && value != null) {
+          element.setAttribute(key, value);
+        }
+      }
+
+      for (const child of vNode.children) {
+        element.appendChild(render(child));
+      }
+
+      return element;
+    }
+
+    // ========================================================================
+    // State Management
+    // ========================================================================
+
+    const state = {
+      view: 'weeks',
+      weeks: [],
+      graph: { nodes: [], edges: [] },
+      order: [],
+      selectedConcept: null,
+      completed: new Set(JSON.parse(localStorage.getItem('completedConcepts') || '[]'))
+    };
+
+    function saveCompleted() {
+      localStorage.setItem('completedConcepts', JSON.stringify([...state.completed]));
+    }
+
+    // ========================================================================
+    // API Functions
+    // ========================================================================
+
+    const API_BASE = 'http://localhost:3001';
+
+    async function fetchWeeks() {
+      const res = await fetch(`${API_BASE}/api/curriculum-weeks`);
+      return res.json();
+    }
+
+    async function fetchGraph() {
+      const res = await fetch(`${API_BASE}/api/graph`);
+      return res.json();
+    }
+
+    async function fetchOrder() {
+      const res = await fetch(`${API_BASE}/api/order`);
+      return res.json();
+    }
+
+    async function fetchConcept(name) {
+      const res = await fetch(`${API_BASE}/api/concept/${name}`);
+      return res.json();
+    }
+
+    // ========================================================================
+    // Components
+    // ========================================================================
+
+    function ConceptCard(concept) {
+      const isCompleted = state.completed.has(concept.id);
+
+      return createElement('div', {
+        className: `concept-card ${isCompleted ? 'completed' : ''}`,
+        onClick: () => showConceptDetail(concept.id)
+      },
+        createElement('div', { className: 'concept-name' },
+          concept.id.replace(/_/g, ' '),
+          createElement('span', { className: 'concept-level' }, `L${concept.level}`)
+        ),
+        createElement('div', { className: 'concept-meta' },
+          `${concept.objectCount || 0} learning objects`,
+          concept.avgCognitiveLoad
+            ? ` • Load: ${(concept.avgCognitiveLoad * 100).toFixed(0)}%`
+            : ''
+        ),
+        concept.inDegree > 0
+          ? createElement('div', { className: 'concept-prereqs' },
+              `← ${concept.inDegree} prerequisites`
+            )
+          : null
+      );
+    }
+
+    function WeekView(week) {
+      const loadPercent = Math.min(100, (week.totalLoad / 3.0) * 100);
+
+      return createElement('div', { className: 'week' },
+        createElement('div', { className: 'week-header' },
+          createElement('div', { className: 'week-title' }, `Week ${week.week}`),
+          createElement('div', { className: 'week-meta' },
+            createElement('span', null, `${week.concepts.length} concepts`),
+            createElement('div', { className: 'load-bar' },
+              createElement('div', {
+                className: 'load-fill',
+                style: { width: `${loadPercent}%` }
+              })
+            )
+          )
+        ),
+        createElement('div', { className: 'concepts-grid' },
+          ...week.concepts.map(c => ConceptCard(c))
+        )
+      );
+    }
+
+    function WeeksContainer() {
+      return createElement('div', { className: 'weeks-container' },
+        ...state.weeks.map(w => WeekView(w))
+      );
+    }
+
+    function GraphView() {
+      return createElement('div', { className: 'graph-container' },
+        createElement('canvas', { id: 'graph-canvas' }),
+        createElement('div', { className: 'graph-legend' },
+          createElement('div', { className: 'legend-item' },
+            createElement('div', { className: 'legend-dot', style: { background: '#3b82f6' } }),
+            'Core Concept'
+          ),
+          createElement('div', { className: 'legend-item' },
+            createElement('div', { className: 'legend-dot', style: { background: '#22c55e' } }),
+            'Completed'
+          ),
+          createElement('div', { className: 'legend-item' },
+            createElement('div', { className: 'legend-dot', style: { background: '#a855f7' } }),
+            'Systems Thinking'
+          )
+        )
+      );
+    }
+
+    function OrderView() {
+      return createElement('div', { className: 'weeks-container' },
+        createElement('div', { className: 'week' },
+          createElement('div', { className: 'week-header' },
+            createElement('div', { className: 'week-title' }, 'Topological Learning Order')
+          ),
+          createElement('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '0.5rem' } },
+            ...state.order.map((concept, i) =>
+              createElement('div', {
+                className: 'prereq-tag',
+                style: { cursor: 'pointer' },
+                onClick: () => showConceptDetail(concept)
+              },
+                `${i + 1}. ${concept.replace(/_/g, ' ')}`
+              )
+            )
+          )
+        )
+      );
+    }
+
+    // ========================================================================
+    // Rendering
+    // ========================================================================
+
+    function renderView() {
+      const main = document.getElementById('main-content');
+      let content;
+
+      switch (state.view) {
+        case 'weeks':
+          content = WeeksContainer();
+          break;
+        case 'graph':
+          content = GraphView();
+          setTimeout(renderGraph, 100);
+          break;
+        case 'order':
+          content = OrderView();
+          break;
+        default:
+          content = createElement('div', null, 'Unknown view');
+      }
+
+      main.innerHTML = '';
+      main.appendChild(render(content));
+    }
+
+    function updateProgressSummary() {
+      document.getElementById('total-concepts').textContent = state.graph.nodes.length;
+      document.getElementById('total-weeks').textContent = state.weeks.length;
+      document.getElementById('completed-count').textContent = state.completed.size;
+
+      const avgLoad = state.graph.nodes.reduce((sum, n) => sum + (n.avgCognitiveLoad || 0.5), 0)
+        / state.graph.nodes.length;
+      document.getElementById('avg-load').textContent = (avgLoad * 100).toFixed(0) + '%';
+    }
+
+    // ========================================================================
+    // Graph Visualization (Canvas)
+    // ========================================================================
+
+    function renderGraph() {
+      const canvas = document.getElementById('graph-canvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width - 48;
+      canvas.height = 500;
+
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Simple force-directed layout simulation
+      const nodes = state.graph.nodes.map((n, i) => ({
+        ...n,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: 0,
+        vy: 0
+      }));
+
+      const nodeMap = new Map(nodes.map(n => [n.id, n]));
+
+      // Simple physics simulation
+      for (let iter = 0; iter < 100; iter++) {
+        // Repulsion between all nodes
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = 5000 / (dist * dist);
+
+            nodes[i].vx -= (dx / dist) * force;
+            nodes[i].vy -= (dy / dist) * force;
+            nodes[j].vx += (dx / dist) * force;
+            nodes[j].vy += (dy / dist) * force;
+          }
+        }
+
+        // Attraction along edges
+        for (const edge of state.graph.edges) {
+          const source = nodeMap.get(edge.source);
+          const target = nodeMap.get(edge.target);
+          if (!source || !target) continue;
+
+          const dx = target.x - source.x;
+          const dy = target.y - source.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const force = dist * 0.01;
+
+          source.vx += (dx / dist) * force;
+          source.vy += (dy / dist) * force;
+          target.vx -= (dx / dist) * force;
+          target.vy -= (dy / dist) * force;
+        }
+
+        // Apply velocity and damping
+        for (const node of nodes) {
+          node.x += node.vx * 0.1;
+          node.y += node.vy * 0.1;
+          node.vx *= 0.9;
+          node.vy *= 0.9;
+
+          // Keep in bounds
+          node.x = Math.max(50, Math.min(width - 50, node.x));
+          node.y = Math.max(50, Math.min(height - 50, node.y));
+        }
+      }
+
+      // Draw edges
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1;
+      for (const edge of state.graph.edges) {
+        const source = nodeMap.get(edge.source);
+        const target = nodeMap.get(edge.target);
+        if (!source || !target) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(source.x, source.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.stroke();
+
+        // Arrow
+        const angle = Math.atan2(target.y - source.y, target.x - source.x);
+        const arrowX = target.x - 15 * Math.cos(angle);
+        const arrowY = target.y - 15 * Math.sin(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(arrowX, arrowY);
+        ctx.lineTo(
+          arrowX - 8 * Math.cos(angle - 0.5),
+          arrowY - 8 * Math.sin(angle - 0.5)
+        );
+        ctx.moveTo(arrowX, arrowY);
+        ctx.lineTo(
+          arrowX - 8 * Math.cos(angle + 0.5),
+          arrowY - 8 * Math.sin(angle + 0.5)
+        );
+        ctx.stroke();
+      }
+
+      // Draw nodes
+      for (const node of nodes) {
+        const isCompleted = state.completed.has(node.id);
+        const isSystemsThinking = ['feedback_loop', 'stock', 'flow', 'system', 'delay'].includes(node.id);
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
+        ctx.fillStyle = isCompleted ? '#22c55e' : isSystemsThinking ? '#a855f7' : '#3b82f6';
+        ctx.fill();
+
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(node.id.replace(/_/g, ' '), node.x, node.y + 22);
+      }
+    }
+
+    // ========================================================================
+    // Detail Panel
+    // ========================================================================
+
+    async function showConceptDetail(conceptId) {
+      state.selectedConcept = conceptId;
+
+      const panel = document.getElementById('detail-panel');
+      const content = document.getElementById('detail-content');
+
+      panel.classList.add('open');
+      content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const concept = await fetchConcept(conceptId);
+
+        const isCompleted = state.completed.has(conceptId);
+
+        const detailView = createElement('div', null,
+          createElement('h2', { className: 'detail-title' },
+            concept.id.replace(/_/g, ' ')
+          ),
+
+          createElement('button', {
+            style: {
+              background: isCompleted ? '#ef4444' : '#22c55e',
+              color: 'white',
+              border: 'none',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              marginBottom: '1.5rem'
+            },
+            onClick: () => toggleCompleted(conceptId)
+          }, isCompleted ? 'Mark Incomplete' : 'Mark Complete'),
+
+          createElement('div', { className: 'detail-section' },
+            createElement('h3', null, 'Prerequisites'),
+            concept.prerequisites.length > 0
+              ? createElement('div', { className: 'prereq-list' },
+                  ...concept.prerequisites.map(p =>
+                    createElement('span', { className: 'prereq-tag' }, p.replace(/_/g, ' '))
+                  )
+                )
+              : createElement('p', { style: { color: 'var(--text-secondary)' } }, 'None (starting concept)')
+          ),
+
+          createElement('div', { className: 'detail-section' },
+            createElement('h3', null, 'Unlocks'),
+            concept.dependents.length > 0
+              ? createElement('div', { className: 'prereq-list' },
+                  ...concept.dependents.map(d =>
+                    createElement('span', { className: 'prereq-tag' }, d.replace(/_/g, ' '))
+                  )
+                )
+              : createElement('p', { style: { color: 'var(--text-secondary)' } }, 'None (terminal concept)')
+          ),
+
+          concept.learningPaths && concept.learningPaths.length > 0
+            ? createElement('div', { className: 'detail-section' },
+                createElement('h3', null, 'Learning Path'),
+                createElement('div', { className: 'learning-path' },
+                  ...concept.learningPaths[0].map((step, i) =>
+                    createElement('div', { className: 'path-step' },
+                      i > 0 ? createElement('span', { className: 'path-arrow' }, '→') : null,
+                      step.replace(/_/g, ' ')
+                    )
+                  )
+                )
+              )
+            : null,
+
+          concept.learningObjects && concept.learningObjects.length > 0
+            ? createElement('div', { className: 'detail-section' },
+                createElement('h3', null, `Learning Objects (${concept.learningObjects.length})`),
+                ...concept.learningObjects.slice(0, 5).map(obj =>
+                  createElement('div', {
+                    style: {
+                      padding: '0.5rem',
+                      background: 'var(--bg-card)',
+                      borderRadius: '6px',
+                      marginTop: '0.5rem',
+                      fontSize: '0.875rem'
+                    }
+                  },
+                    createElement('div', null, obj.contentType),
+                    createElement('div', { style: { color: 'var(--text-secondary)' } },
+                      `Load: ${(obj.cognitiveLoad * 100).toFixed(0)}%`
+                    )
+                  )
+                )
+              )
+            : null
+        );
+
+        content.innerHTML = '';
+        content.appendChild(render(detailView));
+
+      } catch (err) {
+        content.innerHTML = `<p>Error loading concept: ${err.message}</p>`;
+      }
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-panel').classList.remove('open');
+      state.selectedConcept = null;
+    }
+
+    function toggleCompleted(conceptId) {
+      if (state.completed.has(conceptId)) {
+        state.completed.delete(conceptId);
+      } else {
+        state.completed.add(conceptId);
+      }
+      saveCompleted();
+      updateProgressSummary();
+      renderView();
+      if (state.selectedConcept === conceptId) {
+        showConceptDetail(conceptId);
+      }
+    }
+
+    // ========================================================================
+    // Tab Handling
+    // ========================================================================
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        state.view = tab.dataset.view;
+        renderView();
+      });
+    });
+
+    // ========================================================================
+    // Initialize
+    // ========================================================================
+
+    async function init() {
+      try {
+        const [weeksData, graphData, orderData] = await Promise.all([
+          fetchWeeks(),
+          fetchGraph(),
+          fetchOrder()
+        ]);
+
+        state.weeks = weeksData.weeks;
+        state.graph = graphData;
+        state.order = orderData.order;
+
+        updateProgressSummary();
+        renderView();
+
+      } catch (err) {
+        document.getElementById('main-content').innerHTML = `
+          <div class="week">
+            <h2>⚠️ Could not connect to Knowledge Graph API</h2>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">
+              Make sure the server is running:
+            </p>
+            <pre style="background: var(--bg-card); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+cd server
+node knowledge-graph.js
+            </pre>
+          </div>
+        `;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

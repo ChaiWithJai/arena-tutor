@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Networks as Feedback Systems</title>
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --text: #1c1917;
+      --text-muted: #78716c;
+      --accent: #059669;
+      --border: #e7e5e4;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 18px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    header .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    header .meta {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    /* Main content */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    /* Week sections */
+    .week {
+      margin-bottom: 4rem;
+    }
+
+    .week-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .week-number {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .week-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* Prose */
+    p {
+      margin-bottom: 1.5rem;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    /* Mental Model Cards */
+    .mental-model {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .mental-model-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .mental-model-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .mental-model-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .mental-model-insight {
+      font-style: italic;
+      color: var(--text-muted);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin-top: 1rem;
+    }
+
+    /* Mapping Table */
+    .mapping {
+      margin: 2rem 0;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .mapping table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9375rem;
+    }
+
+    .mapping th {
+      background: #f5f5f4;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .mapping td {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .mapping tr:hover {
+      background: #fafaf9;
+    }
+
+    /* Code blocks */
+    .code-insight {
+      background: #1c1917;
+      color: #fafaf9;
+      padding: 1.25rem;
+      border-radius: 8px;
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 0.875rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+    }
+
+    .code-insight .comment {
+      color: #a8a29e;
+    }
+
+    .code-insight .keyword {
+      color: #f472b6;
+    }
+
+    .code-insight .function {
+      color: #60a5fa;
+    }
+
+    /* Assessment criteria */
+    .assessment {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .assessment-header {
+      font-weight: 600;
+      color: #166534;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .assessment-question {
+      font-style: italic;
+    }
+
+    /* Progress indicator (simple) */
+    .progress-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin: 3rem 0;
+      justify-content: center;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .progress-dot.active {
+      background: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    /* Concept highlight */
+    .concept {
+      background: #fef3c7;
+      padding: 0.125rem 0.375rem;
+      border-radius: 3px;
+      font-weight: 500;
+    }
+
+    /* Quote */
+    blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 1.5rem;
+      margin: 2rem 0;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Neural Networks as Feedback Systems</h1>
+  <p class="subtitle">A progressive model mapping ARENA 3.0 to Systems Thinking</p>
+  <div class="meta">
+    <span>6-Week Curriculum</span>
+    <span>4 Mental Models</span>
+    <span>ARENA-Aligned</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- WEEK 1 -->
+  <section class="week" id="week-1">
+    <div class="week-header">
+      <span class="week-number">Week 1</span>
+      <h2 class="week-title">Structure Determines Behavior</h2>
+    </div>
+
+    <p>
+      The first insight from Systems Thinking: <strong>a system is more than the sum of its parts</strong>.
+      It's the interconnections that determine behavior, not just the elements themselves.
+    </p>
+
+    <p>
+      A neural network is a system. It has <span class="concept">elements</span> (tensors, parameters),
+      <span class="concept">interconnections</span> (matrix multiplications, activations), and
+      a <span class="concept">purpose</span> (minimize loss).
+    </p>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">1</div>
+        <span class="mental-model-name">The Collapse Model</span>
+      </div>
+      <p>
+        If you stack multiple panes of clear glass, you can still see straight through them.
+        No matter how many layers of <strong>linear transformations</strong> you compose,
+        the result is still linear.
+      </p>
+      <p class="mental-model-insight">
+        You need a lens (nonlinearity) to bend the light. Without ReLU,
+        your deep network collapses into a single matrix multiplication.
+      </p>
+    </div>
+
+    <div class="mapping">
+      <table>
+        <tr>
+          <th>Meadows Concept</th>
+          <th>Neural Network Equivalent</th>
+        </tr>
+        <tr>
+          <td>Elements (Stocks)</td>
+          <td>Parameters (nn.Parameter)</td>
+        </tr>
+        <tr>
+          <td>Interconnections</td>
+          <td>Linear + Nonlinear operations</td>
+        </tr>
+        <tr>
+          <td>Purpose</td>
+          <td>Minimize Loss</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="assessment">
+      <div class="assessment-header">ARENA Assessment Criteria</div>
+      <p class="assessment-question">
+        "What makes neural networks more powerful than basic statistical methods like linear regression?"
+      </p>
+    </div>
+
+    <p>
+      The answer lies in <strong>nonlinearity</strong>. By composing linear and nonlinear transformations,
+      we can learn basically anything. The structure enables the behavior.
+    </p>
+
+    <div class="progress-bar">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+  </section>
+
+  <!-- WEEK 2 -->
+  <section class="week" id="week-2">
+    <div class="week-header">
+      <span class="week-number">Week 2</span>
+      <h2 class="week-title">The Feedback Loop</h2>
+    </div>
+
+    <p>
+      Learning is a <strong>balancing feedback loop</strong>. The system has a goal (zero loss)
+      and continuously acts to close the gap between current state and desired state.
+    </p>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">2</div>
+        <span class="mental-model-name">The Thermostat Model</span>
+      </div>
+      <p>
+        A thermostat measures the gap between room temperature and the setting.
+        The <strong>loss function</strong> measures the gap between prediction and target.
+        The <strong>optimizer</strong> is the furnace, adjusting the weights.
+      </p>
+      <p class="mental-model-insight">
+        If your learning rate (furnace power) is too high, you overshoot the target and oscillate.
+        The room gets too hot, then too cold. The loss spikes before converging.
+      </p>
+    </div>
+
+    <div class="code-insight">
+<span class="comment"># The complete feedback loop in PyTorch</span>
+<span class="keyword">for</span> batch <span class="keyword">in</span> dataloader:
+    output = model(batch)           <span class="comment"># Forward: generate prediction</span>
+    loss = loss_fn(output, target)  <span class="comment"># Measure: compute discrepancy</span>
+    loss.<span class="function">backward</span>()                 <span class="comment"># Signal: route error back</span>
+    optimizer.<span class="function">step</span>()                <span class="comment"># Act: adjust the weights</span>
+    optimizer.<span class="function">zero_grad</span>()            <span class="comment"># Reset: prepare for next cycle</span>
+    </div>
+
+    <div class="mapping">
+      <table>
+        <tr>
+          <th>Feedback Component</th>
+          <th>PyTorch Implementation</th>
+        </tr>
+        <tr>
+          <td>Goal (desired state)</td>
+          <td>Zero loss / correct predictions</td>
+        </tr>
+        <tr>
+          <td>Comparator (measurement)</td>
+          <td>Loss function (MSE, CrossEntropy)</td>
+        </tr>
+        <tr>
+          <td>Signal (error direction)</td>
+          <td>Gradients from .backward()</td>
+        </tr>
+        <tr>
+          <td>Action (correction)</td>
+          <td>optimizer.step()</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="assessment">
+      <div class="assessment-header">ARENA Assessment Criteria</div>
+      <p class="assessment-question">
+        "What is a loss function? What does it take for arguments, and what does it return?"
+      </p>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+  </section>
+
+  <!-- WEEK 3 -->
+  <section class="week" id="week-3">
+    <div class="week-header">
+      <span class="week-number">Week 3</span>
+      <h2 class="week-title">Information Routing</h2>
+    </div>
+
+    <p>
+      Meadows emphasizes that <strong>information holds systems together</strong>.
+      Missing feedback causes malfunction. In neural networks, <code>.backward()</code>
+      is the information routing process.
+    </p>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">3</div>
+        <span class="mental-model-name">The Information Routing Model</span>
+      </div>
+      <p>
+        Backpropagation traces the computational graph in reverse, sending the error signal
+        from the goal (loss) back to the elements (weights).
+      </p>
+      <p class="mental-model-insight">
+        If a gradient vanishes (becomes zero), the feedback loop is broken.
+        The system stops learning because the signal cannot reach the stock to tell it how to change.
+        This is why ReLU replaced Sigmoid.
+      </p>
+    </div>
+
+    <div class="assessment">
+      <div class="assessment-header">ARENA Assessment Criteria</div>
+      <p class="assessment-question">
+        "When you call .backward(), where are your gradients stored?"
+      </p>
+    </div>
+
+    <p>
+      The gradients are stored in the <code>.grad</code> attribute of each <code>nn.Parameter</code>.
+      This is the "signal" waiting to be applied by the optimizer.
+    </p>
+
+    <blockquote>
+      "The advantage of ReLU over Sigmoid: ReLU effectively avoids the vanishing gradient problem
+      and is more computationally efficient to evaluate."
+    </blockquote>
+
+    <div class="progress-bar">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+  </section>
+
+  <!-- WEEK 4 -->
+  <section class="week" id="week-4">
+    <div class="week-header">
+      <span class="week-number">Week 4</span>
+      <h2 class="week-title">Tensor Manipulation</h2>
+    </div>
+
+    <p>
+      To build complex systems, you must master the tools of construction.
+      <strong>Einops</strong> and <strong>Einsum</strong> allow you to manipulate
+      the shape of system elements without awkward reshape calls.
+    </p>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">4</div>
+        <span class="mental-model-name">The Dimensionality Model</span>
+      </div>
+      <p>
+        Systems have boundaries. When you use einops, you're reshaping the boundaries
+        of your system elements. <strong>Broadcasting</strong> is the system's way of
+        adapting differently-shaped elements to interact.
+      </p>
+      <p class="mental-model-insight">
+        You are the architect ensuring the dimensions (interconnections) align correctly
+        for the mathematical rules to function. Shape mismatches are boundary violations.
+      </p>
+    </div>
+
+    <div class="code-insight">
+<span class="comment"># Einops makes dimension manipulation explicit</span>
+<span class="keyword">from</span> einops <span class="keyword">import</span> rearrange, reduce
+
+<span class="comment"># Batch of images: (batch, channel, height, width)</span>
+images = rearrange(batch, <span class="function">'b c h w -> b (c h w)'</span>)  <span class="comment"># Flatten</span>
+
+<span class="comment"># Attention: separate heads</span>
+q = rearrange(q, <span class="function">'b seq (heads d) -> b heads seq d'</span>, heads=8)
+    </div>
+
+    <div class="assessment">
+      <div class="assessment-header">ARENA Assessment Criteria</div>
+      <p class="assessment-question">
+        "Can you calculate the shape of A @ B where A is (batch, seq, d_model) and B is (d_model, d_head)?"
+      </p>
+    </div>
+
+    <p>
+      Answer: <code>(batch, seq, d_head)</code>. Matrix multiplication contracts the inner dimension.
+    </p>
+
+    <div class="progress-bar">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+  </section>
+
+  <!-- WEEK 5 -->
+  <section class="week" id="week-5">
+    <div class="week-header">
+      <span class="week-number">Week 5</span>
+      <h2 class="week-title">Hierarchies & Subassemblies</h2>
+    </div>
+
+    <p>
+      Meadows uses the parable of two watchmakers: Hora built watches from stable subassemblies
+      (groups of 10 parts), while Tempus built watches as single units. Only Hora succeeded.
+    </p>
+
+    <p>
+      In PyTorch, <strong>subclassing nn.Module</strong> lets you build stable subassemblies.
+      An Attention layer nests inside a TransformerBlock, which nests inside the full model.
+    </p>
+
+    <div class="code-insight">
+<span class="keyword">class</span> <span class="function">TransformerBlock</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, d_model, n_heads):
+        super().__init__()
+        self.attn = Attention(d_model, n_heads)  <span class="comment"># Subassembly</span>
+        self.mlp = MLP(d_model)                   <span class="comment"># Subassembly</span>
+        self.ln1 = nn.LayerNorm(d_model)
+        self.ln2 = nn.LayerNorm(d_model)
+
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        x = x + self.attn(self.ln1(x))           <span class="comment"># Residual stream</span>
+        x = x + self.mlp(self.ln2(x))
+        <span class="keyword">return</span> x
+    </div>
+
+    <div class="assessment">
+      <div class="assessment-header">ARENA Assessment Criteria</div>
+      <p class="assessment-question">
+        "What is a nn.Parameter, and nn.Module? Why must parameters be registered in __init__?"
+      </p>
+    </div>
+
+    <p>
+      Parameters registered in <code>__init__</code> are automatically tracked by PyTorch.
+      The optimizer can find them via <code>model.parameters()</code>.
+      Unregistered weights are invisible to the feedback loop.
+    </p>
+
+    <div class="progress-bar">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+    </div>
+  </section>
+
+  <!-- WEEK 6 -->
+  <section class="week" id="week-6">
+    <div class="week-header">
+      <span class="week-number">Week 6</span>
+      <h2 class="week-title">Opening the Black Box</h2>
+    </div>
+
+    <p>
+      The ultimate goal: <strong>mechanistic interpretability</strong>.
+      We want to open the "black box" and trace exactly how structure creates behavior.
+    </p>
+
+    <p>
+      Using <strong>hooks</strong>, we can read and write to the residual stream during a forward pass.
+      This lets us see the information routing in action.
+    </p>
+
+    <div class="mapping">
+      <table>
+        <tr>
+          <th>Systems Thinking</th>
+          <th>Mechanistic Interpretability</th>
+        </tr>
+        <tr>
+          <td>Tracing feedback loops</td>
+          <td>Activation patching</td>
+        </tr>
+        <tr>
+          <td>Finding leverage points</td>
+          <td>Identifying circuits</td>
+        </tr>
+        <tr>
+          <td>Understanding delays</td>
+          <td>Analyzing residual connections</td>
+        </tr>
+        <tr>
+          <td>Structure determines behavior</td>
+          <td>Attention heads have interpretable functions</td>
+        </tr>
+      </table>
+    </div>
+
+    <blockquote>
+      "Induction heads are circuits that allow the model to perform in-context learning.
+      Specific structural arrangements within the network are responsible for complex capabilities
+      like copying or completing patterns."
+    </blockquote>
+
+    <div class="progress-bar">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot active"></div>
+    </div>
+  </section>
+
+  <!-- Summary -->
+  <section class="week" id="summary">
+    <div class="week-header">
+      <span class="week-number">Summary</span>
+      <h2 class="week-title">The Four Mental Models</h2>
+    </div>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">1</div>
+        <span class="mental-model-name">The Collapse Model</span>
+      </div>
+      <p>
+        Linear compositions remain linear. Nonlinearity breaks the chain
+        and enables complex function approximation.
+      </p>
+    </div>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">2</div>
+        <span class="mental-model-name">The Thermostat Model</span>
+      </div>
+      <p>
+        Training is a balancing feedback loop. Loss measures the gap,
+        gradients signal direction, optimizer closes the gap.
+      </p>
+    </div>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">3</div>
+        <span class="mental-model-name">The Information Routing Model</span>
+      </div>
+      <p>
+        Backpropagation routes error signals. Vanishing gradients break the loop.
+        No signal means no learning.
+      </p>
+    </div>
+
+    <div class="mental-model">
+      <div class="mental-model-header">
+        <div class="mental-model-icon">4</div>
+        <span class="mental-model-name">The Dimensionality Model</span>
+      </div>
+      <p>
+        Tensor shapes are system boundaries. Einops makes boundaries explicit.
+        Broadcasting adapts shapes for interaction.
+      </p>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    A progressive curriculum mapping ARENA 3.0 prerequisites to Donella Meadows' Systems Thinking.
+  </p>
+</footer>
+
+</body>
+</html>

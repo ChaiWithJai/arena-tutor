@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARENA 3.0: AI Safety Fundamentals</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1a1a1a;
+      --border: #262626;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --accent: #10b981;
+      --accent-dim: #059669;
+      --purple: #a78bfa;
+      --orange: #fb923c;
+      --blue: #60a5fa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+
+    .logo {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .persona-select {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* Main Layout */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr 340px;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .chapter {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chapter-header {
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .chapter-header:hover {
+      background: var(--surface-2);
+    }
+
+    .chapter-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .chapter.active .chapter-title {
+      color: var(--accent);
+    }
+
+    .chapter-progress {
+      font-size: 0.625rem;
+      color: var(--text-muted);
+    }
+
+    .chapter-sections {
+      display: none;
+    }
+
+    .chapter.expanded .chapter-sections {
+      display: block;
+    }
+
+    .section-item {
+      padding: 0.625rem 1rem 0.625rem 1.5rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+
+    .section-item:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .section-item.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+
+    .section-item.completed::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .section-hours {
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* Content Panel */
+    .content-panel {
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .section-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .breadcrumb span {
+      color: var(--accent);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .section-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Learning Objectives */
+    .objectives-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card-badge {
+      font-size: 0.625rem;
+      padding: 0.25rem 0.5rem;
+      background: var(--accent-dim);
+      color: var(--text);
+      border-radius: 4px;
+    }
+
+    .objective-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .objective-item:last-child {
+      border-bottom: none;
+    }
+
+    .objective-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .objective-checkbox:hover {
+      border-color: var(--accent);
+    }
+
+    .objective-checkbox.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .objective-checkbox.checked::after {
+      content: '';
+      width: 6px;
+      height: 10px;
+      border: solid var(--bg);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      margin-bottom: 2px;
+    }
+
+    .objective-text {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+    }
+
+    .objective-text.completed {
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    /* Mental Model Card */
+    .mental-model-card {
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(16, 185, 129, 0.1));
+      border: 1px solid var(--purple);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mm-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .mm-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--purple);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--bg);
+    }
+
+    .mm-name {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--purple);
+    }
+
+    .mm-core {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* Worked Examples */
+    .examples-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .example-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .example-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--orange);
+      border-radius: 50%;
+    }
+
+    /* Code Block */
+    .code-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .code-header {
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .code-content {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    .code-content pre {
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      color: #e4e4e7;
+    }
+
+    .code-keyword { color: var(--purple); }
+    .code-function { color: var(--blue); }
+    .code-string { color: var(--accent); }
+    .code-comment { color: var(--text-muted); }
+
+    /* Capstone Connection */
+    .capstone-card {
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(251, 146, 60, 0.05));
+      border: 1px solid var(--orange);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .capstone-label {
+      font-size: 0.75rem;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .capstone-text {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* Navigation Buttons */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      padding: 0.75rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      border-color: var(--accent);
+      background: var(--surface-2);
+    }
+
+    .nav-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    .nav-btn.primary:hover {
+      background: var(--accent-dim);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Chat Panel */
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+    }
+
+    .chat-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .chat-subtitle {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .message {
+      max-width: 90%;
+      padding: 0.625rem 0.875rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .message.user {
+      background: var(--accent);
+      color: var(--bg);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.loading {
+      color: var(--text-muted);
+    }
+
+    .chat-suggestions {
+      padding: 0.5rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .suggestion-btn {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .suggestion-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .chat-input-container {
+      padding: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent);
+    }
+
+    .chat-send {
+      padding: 0.625rem 1rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .chat-send:hover {
+      background: var(--accent-dim);
+    }
+
+    .chat-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      main {
+        grid-template-columns: 220px 1fr 300px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+      .sidebar, .chat-panel {
+        display: none;
+      }
+    }
+
+    /* Visual System Model */
+    .model-toggle {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--orange);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--orange);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .model-toggle:hover {
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .model-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .model-overlay.visible {
+      display: flex;
+    }
+
+    .model-container {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .model-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .model-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 0.5rem;
+    }
+
+    .model-subtitle {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .system-diagram {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .mental-models-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .mm-node {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 2px solid var(--border);
+      font-size: 0.8125rem;
+      transition: all 0.3s;
+      opacity: 0.4;
+    }
+
+    .mm-node.active {
+      opacity: 1;
+      border-color: var(--purple);
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.2);
+    }
+
+    .mm-node .mm-label {
+      font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 0.25rem;
+    }
+
+    .mm-node .mm-desc {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .capstone-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .capstone-node {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(251, 146, 60, 0.1));
+      border: 3px solid var(--orange);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .capstone-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .capstone-name {
+      font-weight: 600;
+      color: var(--orange);
+      font-size: 0.9375rem;
+    }
+
+    .capstone-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .chapter-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .chapter-node {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      font-size: 0.8125rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.3s;
+      opacity: 0.4;
+    }
+
+    .chapter-node.active {
+      opacity: 1;
+      border-color: var(--accent);
+    }
+
+    .chapter-node.complete {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .chapter-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .chapter-node.active .chapter-num,
+    .chapter-node.complete .chapter-num {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .chapter-info {
+      flex: 1;
+    }
+
+    .chapter-title {
+      font-weight: 500;
+    }
+
+    .chapter-connects {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    .chapters-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ch-node {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 2px solid var(--border);
+      font-size: 0.8125rem;
+      transition: all 0.3s;
+      opacity: 0.4;
+    }
+
+    .ch-node.active {
+      opacity: 1;
+      border-color: var(--accent);
+    }
+
+    .ch-node.complete {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .ch-node .ch-num {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .ch-node .ch-title {
+      color: var(--text);
+      margin-top: 0.25rem;
+    }
+
+    .ch-node .ch-connects {
+      color: var(--text-muted);
+      font-size: 0.6875rem;
+      margin-top: 0.5rem;
+    }
+
+    .connection-line {
+      position: absolute;
+      height: 2px;
+      background: var(--border);
+      transform-origin: left center;
+    }
+
+    .model-legend {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.locked { background: var(--border); }
+    .legend-dot.active { background: var(--accent); }
+    .legend-dot.complete { background: var(--accent); border: 2px solid var(--text); }
+
+    /* Visual Network Diagram */
+    .model-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .model-tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .model-tab:hover {
+      border-color: var(--text-muted);
+    }
+
+    .model-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .network-diagram {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 2rem;
+      min-height: 400px;
+      position: relative;
+    }
+
+    .network-svg {
+      width: 100%;
+      height: 400px;
+    }
+
+    .net-node {
+      transition: all 0.5s ease;
+    }
+
+    .net-node.locked {
+      opacity: 0.15;
+    }
+
+    .net-node.active {
+      opacity: 1;
+    }
+
+    .net-label {
+      font-size: 11px;
+      fill: var(--text-muted);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .net-label.active {
+      fill: var(--text);
+    }
+
+    .net-title {
+      font-size: 13px;
+      font-weight: 600;
+      fill: var(--accent);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .mm-badge {
+      font-size: 9px;
+      fill: var(--purple);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .flow-arrow {
+      stroke: var(--accent);
+      stroke-width: 2;
+      fill: none;
+      marker-end: url(#arrowhead);
+      opacity: 0.3;
+      transition: opacity 0.5s;
+    }
+
+    .flow-arrow.active {
+      opacity: 1;
+    }
+
+    .backprop-arrow {
+      stroke: var(--orange);
+      stroke-width: 1.5;
+      stroke-dasharray: 4;
+      fill: none;
+      marker-end: url(#arrowhead-orange);
+    }
+
+    .network-key {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .key-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .key-line {
+      width: 24px;
+      height: 2px;
+    }
+
+    .key-line.forward { background: var(--accent); }
+    .key-line.backward { background: var(--orange); background: repeating-linear-gradient(90deg, var(--orange), var(--orange) 4px, transparent 4px, transparent 8px); }
+    .key-line.attention { background: var(--purple); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">ARENA 3.0: AI Safety Fundamentals</div>
+  <div class="header-controls">
+    <button class="model-toggle" onclick="toggleSystemModel()">◎ System Model</button>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+    <span class="progress-text" id="progress-text">0/16 sections</span>
+    <select id="persona-select" class="persona-select">
+      <option value="tyla">Tyla (CS Undergrad)</option>
+      <option value="aaliyah">Aaliyah (Bootcamp Dev)</option>
+      <option value="maneesha">Maneesha (ID)</option>
+    </select>
+  </div>
+</header>
+
+<!-- System Model Overlay -->
+<div class="model-overlay" id="system-model">
+  <div class="model-container">
+    <button class="model-close" onclick="toggleSystemModel()">×</button>
+    <div class="model-title">Sycophancy Detection & Mitigation</div>
+    <div class="model-subtitle">Visual architecture that builds as you learn</div>
+
+    <!-- Tabs -->
+    <div class="model-tabs">
+      <button class="model-tab active" onclick="switchModelTab('network')">Visual Network</button>
+      <button class="model-tab" onclick="switchModelTab('curriculum')">Curriculum Map</button>
+    </div>
+
+    <!-- Tab 1: Visual Network Diagram -->
+    <div class="tab-content active" id="tab-network">
+      <div class="network-diagram">
+        <svg class="network-svg" viewBox="0 0 800 400" id="network-svg">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+            </marker>
+            <marker id="arrowhead-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#fb923c"/>
+            </marker>
+            <marker id="arrowhead-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa"/>
+            </marker>
+          </defs>
+
+          <!-- Ch0: Basic Neural Network Structure -->
+          <g class="net-node locked" id="net-input">
+            <text class="net-title" x="50" y="30">Ch0: Fundamentals</text>
+            <text class="net-label" x="30" y="100">Input</text>
+            <text class="mm-badge" x="30" y="115">[Dimensionality]</text>
+            <rect x="30" y="125" width="60" height="80" rx="4" fill="none" stroke="#60a5fa" stroke-width="2"/>
+            <circle cx="60" cy="145" r="8" fill="#60a5fa"/>
+            <circle cx="60" cy="165" r="8" fill="#60a5fa"/>
+            <circle cx="60" cy="185" r="8" fill="#60a5fa"/>
+          </g>
+
+          <g class="net-node locked" id="net-hidden">
+            <text class="net-label" x="140" y="80">Hidden Layers</text>
+            <text class="mm-badge" x="140" y="95">[Collapse Model]</text>
+            <rect x="140" y="105" width="80" height="120" rx="4" fill="none" stroke="#a78bfa" stroke-width="2"/>
+            <circle cx="180" cy="130" r="8" fill="#a78bfa"/>
+            <circle cx="180" cy="155" r="8" fill="#a78bfa"/>
+            <circle cx="180" cy="180" r="8" fill="#a78bfa"/>
+            <circle cx="180" cy="205" r="8" fill="#a78bfa"/>
+            <text class="net-label" x="155" y="240" style="font-size:9px">+ ReLU (nonlinear!)</text>
+          </g>
+
+          <g class="net-node locked" id="net-output">
+            <text class="net-label" x="260" y="100">Output</text>
+            <rect x="260" y="125" width="60" height="80" rx="4" fill="none" stroke="#10b981" stroke-width="2"/>
+            <circle cx="290" cy="150" r="8" fill="#10b981"/>
+            <circle cx="290" cy="180" r="8" fill="#10b981"/>
+          </g>
+
+          <!-- Forward arrows -->
+          <path class="flow-arrow" id="arrow-1" d="M 90 165 L 135 165"/>
+          <path class="flow-arrow" id="arrow-2" d="M 220 165 L 255 165"/>
+
+          <!-- Training Loop (Thermostat) -->
+          <g class="net-node locked" id="net-loss">
+            <text class="net-label" x="340" y="100">Loss</text>
+            <text class="mm-badge" x="340" y="115">[Thermostat]</text>
+            <rect x="340" y="125" width="60" height="50" rx="4" fill="none" stroke="#fb923c" stroke-width="2"/>
+            <text class="net-label active" x="352" y="155" style="fill:#fb923c">gap?</text>
+          </g>
+          <path class="flow-arrow" id="arrow-3" d="M 320 165 L 335 150"/>
+
+          <!-- Backprop arrows (Routing Model) -->
+          <g class="net-node locked" id="net-backprop">
+            <text class="net-label" x="340" y="220">Backprop</text>
+            <text class="mm-badge" x="340" y="235">[Routing]</text>
+            <path class="backprop-arrow" d="M 370 195 L 370 260 L 180 260 L 180 230"/>
+            <path class="backprop-arrow" d="M 180 260 L 60 260 L 60 210"/>
+          </g>
+
+          <!-- Ch1: Transformer / Attention -->
+          <g class="net-node locked" id="net-transformer">
+            <text class="net-title" x="470" y="30">Ch1: Interpretability</text>
+            <rect x="450" y="50" width="140" height="100" rx="8" fill="none" stroke="#a78bfa" stroke-width="2"/>
+            <text class="net-label" x="485" y="70">Transformer</text>
+
+            <!-- Attention heads -->
+            <rect x="460" y="80" width="30" height="25" rx="3" fill="rgba(167,139,250,0.3)" stroke="#a78bfa"/>
+            <rect x="495" y="80" width="30" height="25" rx="3" fill="rgba(167,139,250,0.3)" stroke="#a78bfa"/>
+            <rect x="530" y="80" width="30" height="25" rx="3" fill="rgba(167,139,250,0.3)" stroke="#a78bfa"/>
+            <text class="net-label" x="465" y="125" style="font-size:9px">Attention Heads</text>
+            <text class="mm-badge" x="470" y="140">Where does sycophancy live?</text>
+          </g>
+
+          <!-- Ch2: RLHF Loop -->
+          <g class="net-node locked" id="net-rlhf">
+            <text class="net-title" x="470" y="175">Ch2: RL / RLHF</text>
+            <rect x="450" y="185" width="140" height="80" rx="8" fill="none" stroke="#10b981" stroke-width="2"/>
+
+            <text class="net-label" x="460" y="205" style="font-size:9px">Policy π</text>
+            <rect x="460" y="210" width="40" height="20" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981"/>
+
+            <text class="net-label" x="520" y="205" style="font-size:9px">Reward R</text>
+            <rect x="520" y="210" width="40" height="20" rx="3" fill="rgba(251,146,60,0.3)" stroke="#fb923c"/>
+
+            <path class="flow-arrow" d="M 505 220 L 515 220" style="stroke:#10b981"/>
+            <text class="mm-badge" x="465" y="250">Can we train OUT sycophancy?</text>
+          </g>
+
+          <!-- Ch3: Evaluation -->
+          <g class="net-node locked" id="net-eval">
+            <text class="net-title" x="630" y="30">Ch3: Evaluations</text>
+            <rect x="620" y="50" width="150" height="130" rx="8" fill="none" stroke="#fb923c" stroke-width="2"/>
+
+            <text class="net-label" x="640" y="75">Sycophancy Tests</text>
+            <rect x="630" y="85" width="130" height="25" rx="3" fill="rgba(251,146,60,0.1)" stroke="#fb923c"/>
+            <text class="net-label" x="640" y="102" style="font-size:9px">✓ Agreement rate</text>
+
+            <rect x="630" y="115" width="130" height="25" rx="3" fill="rgba(251,146,60,0.1)" stroke="#fb923c"/>
+            <text class="net-label" x="640" y="132" style="font-size:9px">✓ Truth vs. approval</text>
+
+            <rect x="630" y="145" width="130" height="25" rx="3" fill="rgba(251,146,60,0.1)" stroke="#fb923c"/>
+            <text class="net-label" x="640" y="162" style="font-size:9px">✓ Behavioral probes</text>
+          </g>
+
+          <!-- Big Picture Arrow -->
+          <g class="net-node locked" id="net-capstone">
+            <text class="net-label" x="630" y="210" style="fill:#fb923c;font-size:11px">🎯 Measure, Locate, Fix</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="network-key">
+        <div class="key-item">
+          <div class="key-line forward"></div>
+          <span>Forward pass</span>
+        </div>
+        <div class="key-item">
+          <div class="key-line backward"></div>
+          <span>Backpropagation</span>
+        </div>
+        <div class="key-item">
+          <div class="key-line attention"></div>
+          <span>Attention/Interpretability</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Original Curriculum Map -->
+    <div class="tab-content" id="tab-curriculum">
+      <div class="system-diagram">
+        <!-- Mental Models Column -->
+        <div class="mental-models-col">
+          <div class="mm-node" id="mm-collapse">
+            <div class="mm-label">The Collapse Model</div>
+            <div class="mm-desc">Linear compositions remain linear. Nonlinearity breaks the chain.</div>
+          </div>
+          <div class="mm-node" id="mm-thermostat">
+            <div class="mm-label">The Thermostat Model</div>
+            <div class="mm-desc">Training is a feedback loop. Loss measures gap, gradients signal direction.</div>
+          </div>
+          <div class="mm-node" id="mm-routing">
+            <div class="mm-label">The Routing Model</div>
+            <div class="mm-desc">Backprop routes error signals. Vanishing gradients break the loop.</div>
+          </div>
+          <div class="mm-node" id="mm-dimensionality">
+            <div class="mm-label">The Dimensionality Model</div>
+            <div class="mm-desc">Tensor shapes are system boundaries. Einops makes boundaries explicit.</div>
+          </div>
+        </div>
+
+        <!-- Capstone Center -->
+        <div class="capstone-center">
+          <div class="capstone-node">
+            <div class="capstone-icon">🎯</div>
+            <div class="capstone-name">Sycophancy Detection</div>
+            <div class="capstone-sub">Can we detect and mitigate when AI optimizes for approval over truth?</div>
+          </div>
+        </div>
+
+        <!-- Chapters Column -->
+        <div class="chapters-col">
+          <div class="ch-node" id="ch-0">
+            <div class="ch-num">Ch 0</div>
+            <div class="ch-title">Fundamentals</div>
+            <div class="ch-connects">→ How models learn to optimize</div>
+          </div>
+          <div class="ch-node" id="ch-1">
+            <div class="ch-num">Ch 1</div>
+            <div class="ch-title">Interpretability</div>
+            <div class="ch-connects">→ Finding where sycophancy lives</div>
+          </div>
+          <div class="ch-node" id="ch-2">
+            <div class="ch-num">Ch 2</div>
+            <div class="ch-title">Reinforcement Learning</div>
+            <div class="ch-connects">→ Can we train out sycophancy?</div>
+          </div>
+          <div class="ch-node" id="ch-3">
+            <div class="ch-num">Ch 3</div>
+            <div class="ch-title">LLM Evaluations</div>
+            <div class="ch-connects">→ Measuring sycophancy rigorously</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-legend">
+        <div class="legend-item">
+          <div class="legend-dot locked"></div>
+          <span>Not started</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot active"></div>
+          <span>In progress</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot complete"></div>
+          <span>Complete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar" id="sidebar">
+    <!-- Populated by JS -->
+  </nav>
+
+  <!-- Main Content -->
+  <div class="content-panel" id="content-area">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-avatar">G</div>
+      <div class="chat-info">
+        <div class="chat-title">Gemma Tutor</div>
+        <div class="chat-subtitle">Ask about learning objectives</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="message assistant">
+        I'm here to help you master each learning objective. Ask me to explain concepts, show code examples, or quiz you on what you've learned.
+      </div>
+    </div>
+    <div class="chat-suggestions" id="chat-suggestions">
+      <!-- Populated by JS -->
+    </div>
+    <div class="chat-input-container">
+      <div class="chat-input-wrapper">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Ask about this section..." />
+        <button class="chat-send" id="chat-send">Send</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// State
+const state = {
+  curriculum: null,
+  currentChapter: 0,
+  currentSection: 0,
+  completedObjectives: JSON.parse(localStorage.getItem('arena-objectives') || '{}'),
+  completedSections: JSON.parse(localStorage.getItem('arena-sections') || '[]'),
+  messages: [],
+  persona: localStorage.getItem('arena-persona') || 'tyla',
+  isLoading: false,
+};
+
+const API_URL = 'http://localhost:3002';
+
+// Load curriculum
+async function loadCurriculum() {
+  try {
+    const res = await fetch(`${API_URL}/api/curriculum`);
+    state.curriculum = await res.json();
+  } catch (e) {
+    console.error('Failed to load curriculum:', e);
+    state.curriculum = { chapters: [] };
+  }
+  renderSidebar();
+  renderContent();
+  updateProgress();
+}
+
+// Render sidebar navigation
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const chapters = state.curriculum?.chapters || [];
+
+  sidebar.innerHTML = chapters.map((chapter, chIdx) => {
+    const sections = chapter.sections || [];
+    const completedCount = sections.filter((_, sIdx) =>
+      state.completedSections.includes(`${chIdx}-${sIdx}`)
+    ).length;
+
+    return `
+      <div class="chapter ${chIdx === state.currentChapter ? 'active expanded' : ''}" data-chapter="${chIdx}">
+        <div class="chapter-header" onclick="toggleChapter(${chIdx})">
+          <span class="chapter-title">${chapter.title}</span>
+          <span class="chapter-progress">${completedCount}/${sections.length}</span>
+        </div>
+        <div class="chapter-sections">
+          ${sections.map((section, sIdx) => `
+            <div class="section-item ${chIdx === state.currentChapter && sIdx === state.currentSection ? 'active' : ''} ${state.completedSections.includes(`${chIdx}-${sIdx}`) ? 'completed' : ''}"
+                 onclick="goToSection(${chIdx}, ${sIdx})">
+              <span>${section.id} ${section.title}</span>
+              <span class="section-hours">${section.hours}h</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Toggle chapter expansion
+function toggleChapter(chIdx) {
+  const chapters = document.querySelectorAll('.chapter');
+  chapters.forEach((ch, idx) => {
+    if (idx === chIdx) {
+      ch.classList.toggle('expanded');
+    }
+  });
+}
+
+// Navigate to section
+function goToSection(chIdx, sIdx) {
+  state.currentChapter = chIdx;
+  state.currentSection = sIdx;
+  renderSidebar();
+  renderContent();
+  updateChatSuggestions();
+}
+
+// Render main content
+function renderContent() {
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+  const mentalModel = state.curriculum?.mental_models?.[section?.mental_model];
+
+  if (!section) return;
+
+  const sectionKey = `${state.currentChapter}-${state.currentSection}`;
+  const objectives = section.learning_objectives || [];
+
+  const content = document.getElementById('content-area');
+  content.innerHTML = `
+    <div class="section-header">
+      <div class="breadcrumb">${chapter.title} <span>/ ${section.id}</span></div>
+      <h1 class="section-title">${section.title}</h1>
+      <div class="section-meta">
+        <span>${section.hours} hours</span>
+        <span>${objectives.length} objectives</span>
+        ${section.worked_examples ? `<span>${section.worked_examples.length} examples</span>` : ''}
+      </div>
+    </div>
+
+    <!-- Learning Objectives -->
+    <div class="objectives-card">
+      <div class="card-header">
+        <span class="card-title">Learning Objectives</span>
+        <span class="card-badge">${getCompletedObjectivesCount(sectionKey)}/${objectives.length} complete</span>
+      </div>
+      ${objectives.map((obj, idx) => {
+        const objKey = `${sectionKey}-${idx}`;
+        const isCompleted = state.completedObjectives[objKey];
+        return `
+          <div class="objective-item" onclick="toggleObjective('${objKey}')" style="cursor:pointer;">
+            <div class="objective-checkbox ${isCompleted ? 'checked' : ''}"></div>
+            <span class="objective-text ${isCompleted ? 'completed' : ''}">${obj}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <!-- Mental Model -->
+    ${mentalModel ? `
+      <div class="mental-model-card">
+        <div class="mm-header">
+          <div class="mm-icon">M</div>
+          <span class="mm-name">${mentalModel.name}</span>
+        </div>
+        <p class="mm-core">${mentalModel.core}</p>
+      </div>
+    ` : ''}
+
+    <!-- Worked Examples -->
+    ${section.worked_examples?.length ? `
+      <div class="examples-card">
+        <div class="card-header">
+          <span class="card-title">Worked Examples</span>
+        </div>
+        ${section.worked_examples.map(ex => `
+          <div class="example-item">${ex}</div>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <!-- Code Snippet -->
+    ${section.code_snippet ? `
+      <div class="code-card">
+        <div class="code-header">
+          <span>Python</span>
+          <button onclick="copyCode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <div class="code-content">
+          <pre id="code-block">${highlightCode(section.code_snippet)}</pre>
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Capstone Connection -->
+    ${section.capstone_connection ? `
+      <div class="capstone-card">
+        <div class="capstone-label">Capstone Connection</div>
+        <p class="capstone-text">${section.capstone_connection}</p>
+      </div>
+    ` : ''}
+
+    <!-- Navigation -->
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="prevSection()" ${isFirstSection() ? 'disabled' : ''}>
+        Previous Section
+      </button>
+      <button class="nav-btn primary" onclick="nextSection()" ${isLastSection() ? 'disabled' : ''}>
+        ${allObjectivesComplete(sectionKey) ? 'Next Section' : 'Mark Complete & Continue'}
+      </button>
+    </div>
+  `;
+}
+
+// Toggle objective completion
+function toggleObjective(objKey) {
+  state.completedObjectives[objKey] = !state.completedObjectives[objKey];
+  localStorage.setItem('arena-objectives', JSON.stringify(state.completedObjectives));
+  renderContent();
+  updateProgress();
+  checkSectionCompletion();
+}
+
+// Get completed objectives count for a section
+function getCompletedObjectivesCount(sectionKey) {
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+  const objectives = section?.learning_objectives || [];
+
+  return objectives.filter((_, idx) =>
+    state.completedObjectives[`${sectionKey}-${idx}`]
+  ).length;
+}
+
+// Check if all objectives in section are complete
+function allObjectivesComplete(sectionKey) {
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+  const objectives = section?.learning_objectives || [];
+
+  return objectives.every((_, idx) =>
+    state.completedObjectives[`${sectionKey}-${idx}`]
+  );
+}
+
+// Check and mark section as completed
+function checkSectionCompletion() {
+  const sectionKey = `${state.currentChapter}-${state.currentSection}`;
+  if (allObjectivesComplete(sectionKey) && !state.completedSections.includes(sectionKey)) {
+    state.completedSections.push(sectionKey);
+    localStorage.setItem('arena-sections', JSON.stringify(state.completedSections));
+    renderSidebar();
+  }
+}
+
+// Navigation helpers
+function isFirstSection() {
+  return state.currentChapter === 0 && state.currentSection === 0;
+}
+
+function isLastSection() {
+  const chapters = state.curriculum?.chapters || [];
+  const lastChapter = chapters.length - 1;
+  const lastSection = (chapters[lastChapter]?.sections?.length || 1) - 1;
+  return state.currentChapter === lastChapter && state.currentSection === lastSection;
+}
+
+function prevSection() {
+  if (state.currentSection > 0) {
+    state.currentSection--;
+  } else if (state.currentChapter > 0) {
+    state.currentChapter--;
+    const prevChapter = state.curriculum?.chapters?.[state.currentChapter];
+    state.currentSection = (prevChapter?.sections?.length || 1) - 1;
+  }
+  renderSidebar();
+  renderContent();
+  updateChatSuggestions();
+}
+
+function nextSection() {
+  // Mark current section as complete if not already
+  const sectionKey = `${state.currentChapter}-${state.currentSection}`;
+  if (!state.completedSections.includes(sectionKey)) {
+    // Mark all objectives as complete
+    const chapter = state.curriculum?.chapters?.[state.currentChapter];
+    const section = chapter?.sections?.[state.currentSection];
+    const objectives = section?.learning_objectives || [];
+    objectives.forEach((_, idx) => {
+      state.completedObjectives[`${sectionKey}-${idx}`] = true;
+    });
+    localStorage.setItem('arena-objectives', JSON.stringify(state.completedObjectives));
+
+    state.completedSections.push(sectionKey);
+    localStorage.setItem('arena-sections', JSON.stringify(state.completedSections));
+  }
+
+  // Navigate to next
+  const currentChapter = state.curriculum?.chapters?.[state.currentChapter];
+  if (state.currentSection < (currentChapter?.sections?.length || 1) - 1) {
+    state.currentSection++;
+  } else if (state.currentChapter < (state.curriculum?.chapters?.length || 1) - 1) {
+    state.currentChapter++;
+    state.currentSection = 0;
+  }
+
+  renderSidebar();
+  renderContent();
+  updateProgress();
+  updateChatSuggestions();
+}
+
+// Update progress bar
+function updateProgress() {
+  const chapters = state.curriculum?.chapters || [];
+  let totalSections = 0;
+  chapters.forEach(ch => totalSections += (ch.sections?.length || 0));
+
+  const completedCount = state.completedSections.length;
+  const percent = totalSections > 0 ? (completedCount / totalSections * 100) : 0;
+
+  document.getElementById('progress-fill').style.width = `${percent}%`;
+  document.getElementById('progress-text').textContent = `${completedCount}/${totalSections} sections`;
+}
+
+// Update chat suggestions based on current section
+function updateChatSuggestions() {
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+  const objectives = section?.learning_objectives || [];
+
+  const suggestions = [
+    `Explain ${section?.title}`,
+    objectives[0] ? `How do I "${objectives[0]}"?` : null,
+    'Show me a code example',
+    'Quiz me on this section',
+  ].filter(Boolean).slice(0, 4);
+
+  const container = document.getElementById('chat-suggestions');
+  container.innerHTML = suggestions.map(s => `
+    <button class="suggestion-btn" onclick="askSuggestion('${escapeHtml(s)}')">${s.length > 30 ? s.slice(0, 30) + '...' : s}</button>
+  `).join('');
+}
+
+function askSuggestion(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+// Simple code highlighting
+function highlightCode(code) {
+  // Escape HTML entities
+  let result = code
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Use placeholders to avoid regex conflicts
+  const placeholders = [];
+
+  // First: extract strings and comments (they shouldn't be keyword-highlighted)
+  result = result.replace(/('.*?'|".*?")/g, (match) => {
+    placeholders.push(`<span class="code-string">${match}</span>`);
+    return `__PLACEHOLDER_${placeholders.length - 1}__`;
+  });
+
+  result = result.replace(/(#.*)$/gm, (match) => {
+    placeholders.push(`<span class="code-comment">${match}</span>`);
+    return `__PLACEHOLDER_${placeholders.length - 1}__`;
+  });
+
+  // Then: highlight keywords and functions
+  result = result
+    .replace(/\b(from|import|def|class|for|in|if|else|return|with|as|async|await|super)\b/g, '<span class="code-keyword">$1</span>')
+    .replace(/\b(rearrange|einsum|Parameter|Module|backward|step|zero_grad|randn|zeros|nn|torch|self)\b/g, '<span class="code-function">$1</span>');
+
+  // Restore placeholders
+  placeholders.forEach((ph, i) => {
+    result = result.replace(`__PLACEHOLDER_${i}__`, ph);
+  });
+
+  return result;
+}
+
+function copyCode() {
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+  if (section?.code_snippet) {
+    navigator.clipboard.writeText(section.code_snippet);
+  }
+}
+
+// System Model
+function toggleSystemModel() {
+  const overlay = document.getElementById('system-model');
+  overlay.classList.toggle('visible');
+  if (overlay.classList.contains('visible')) {
+    updateSystemModel();
+  }
+}
+
+function updateSystemModel() {
+  if (!state.curriculum) return;
+
+  // Update chapter nodes based on completion
+  state.curriculum.chapters.forEach((chapter, idx) => {
+    const node = document.getElementById(`ch-${idx}`);
+    if (!node) return;
+
+    const totalSections = chapter.sections.length;
+    const completedSections = chapter.sections.filter((_, sIdx) => {
+      const sectionKey = `${idx}-${sIdx}`;
+      return state.completedSections.includes(sectionKey);
+    }).length;
+
+    node.classList.remove('active', 'complete');
+
+    if (completedSections === totalSections && totalSections > 0) {
+      node.classList.add('complete');
+    } else if (idx === state.currentChapter) {
+      node.classList.add('active');
+    } else if (completedSections > 0) {
+      node.classList.add('active');
+    }
+  });
+
+  // Update mental models based on which chapters are active/complete
+  const mentalModelMap = {
+    'mm-dimensionality': [0], // Ch0: tensor operations
+    'mm-collapse': [0, 1],    // Ch0-1: linear layers, transformers
+    'mm-thermostat': [0, 2],  // Ch0, Ch2: training loops, RL
+    'mm-routing': [0, 1, 2],  // backprop, interpretability, RL
+  };
+
+  Object.entries(mentalModelMap).forEach(([mmId, chapters]) => {
+    const mmNode = document.getElementById(mmId);
+    if (!mmNode) return;
+
+    const hasProgress = chapters.some(chIdx => {
+      const ch = state.curriculum.chapters[chIdx];
+      return ch?.sections?.some((_, sIdx) => {
+        const sectionKey = `${chIdx}-${sIdx}`;
+        return state.completedSections.includes(sectionKey) ||
+               (chIdx === state.currentChapter);
+      });
+    });
+
+    mmNode.classList.toggle('active', hasProgress);
+  });
+
+  // Update visual network diagram
+  updateNetworkDiagram();
+}
+
+// Tab switching for system model
+function switchModelTab(tabName) {
+  // Update tab buttons
+  document.querySelectorAll('.model-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  // Update tab content
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+}
+
+// Update visual network diagram based on progress
+function updateNetworkDiagram() {
+  if (!state.curriculum) return;
+
+  // Define which network elements unlock with each chapter section
+  const networkUnlocks = {
+    // Ch0 sections unlock basic network
+    '0-0': ['net-input', 'arrow-1'],           // Prerequisites: tensor shapes
+    '0-1': ['net-hidden'],                      // CNNs: hidden layers
+    '0-2': ['net-output', 'arrow-2', 'net-loss'], // Optimization: output + loss
+    '0-3': ['net-backprop'],                   // Backprop: gradient flow
+
+    // Ch1 sections unlock transformer
+    '1-0': ['net-transformer'],                 // TransformerLens
+    '1-1': ['net-transformer'],                 // Superposition
+    '1-2': ['net-transformer'],                 // Indirect objects
+    '1-3': ['net-transformer'],                 // Othello
+
+    // Ch2 sections unlock RLHF
+    '2-0': ['net-rlhf'],                        // PPO
+    '2-1': ['net-rlhf'],                        // DQN/Atari
+    '2-2': ['net-rlhf'],                        // RLHF
+    '2-3': ['net-rlhf'],                        // Reward models
+
+    // Ch3 sections unlock eval
+    '3-0': ['net-eval', 'net-capstone'],        // Evals intro
+    '3-1': ['net-eval', 'net-capstone'],        // Bias detection
+    '3-2': ['net-eval', 'net-capstone'],        // Sycophancy
+    '3-3': ['net-eval', 'net-capstone'],        // Full evals
+  };
+
+  // Collect all unlocked elements
+  const unlockedElements = new Set();
+
+  // Check current chapter/section (in progress)
+  const currentKey = `${state.currentChapter}-${state.currentSection}`;
+  if (networkUnlocks[currentKey]) {
+    networkUnlocks[currentKey].forEach(id => unlockedElements.add(id));
+  }
+
+  // Check completed sections
+  state.completedSections.forEach(sectionKey => {
+    if (networkUnlocks[sectionKey]) {
+      networkUnlocks[sectionKey].forEach(id => unlockedElements.add(id));
+    }
+  });
+
+  // Also unlock based on any progress in current chapter
+  for (let s = 0; s <= state.currentSection; s++) {
+    const key = `${state.currentChapter}-${s}`;
+    if (networkUnlocks[key]) {
+      networkUnlocks[key].forEach(id => unlockedElements.add(id));
+    }
+  }
+
+  // Update SVG elements
+  const networkNodes = [
+    'net-input', 'net-hidden', 'net-output', 'net-loss', 'net-backprop',
+    'net-transformer', 'net-rlhf', 'net-eval', 'net-capstone'
+  ];
+
+  networkNodes.forEach(nodeId => {
+    const node = document.getElementById(nodeId);
+    if (node) {
+      if (unlockedElements.has(nodeId)) {
+        node.classList.remove('locked');
+        node.classList.add('active');
+      } else {
+        node.classList.add('locked');
+        node.classList.remove('active');
+      }
+    }
+  });
+
+  // Update arrows
+  ['arrow-1', 'arrow-2', 'arrow-3'].forEach(arrowId => {
+    const arrow = document.getElementById(arrowId);
+    if (arrow) {
+      if (unlockedElements.has(arrowId)) {
+        arrow.classList.add('active');
+      } else {
+        arrow.classList.remove('active');
+      }
+    }
+  });
+}
+
+// Chat functionality
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if (!message || state.isLoading) return;
+
+  input.value = '';
+  state.isLoading = true;
+
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+
+  state.messages.push({ role: 'user', content: message });
+  renderMessages();
+  addLoadingMessage();
+
+  try {
+    const res = await fetch(`${API_URL}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: state.messages,
+        currentWeek: state.currentChapter * 2 + 1,
+        persona: state.persona,
+        context: {
+          chapter: chapter?.title,
+          section: section?.title,
+          objectives: section?.learning_objectives,
+        }
+      }),
+    });
+
+    const data = await res.json();
+    removeLoadingMessage();
+
+    if (data.response) {
+      state.messages.push({ role: 'assistant', content: data.response });
+    } else if (data.error) {
+      state.messages.push({ role: 'assistant', content: `Error: ${data.error}` });
+    }
+  } catch (e) {
+    removeLoadingMessage();
+    state.messages.push({
+      role: 'assistant',
+      content: `Connection error. Make sure the tutor server is running.`
+    });
+  }
+
+  state.isLoading = false;
+  renderMessages();
+}
+
+function renderMessages() {
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = `
+    <div class="message assistant">
+      I'm here to help you master each learning objective. Ask me to explain concepts, show code examples, or quiz you on what you've learned.
+    </div>
+    ${state.messages.map(m => `
+      <div class="message ${m.role}">${escapeHtml(m.content)}</div>
+    `).join('')}
+  `;
+  container.scrollTop = container.scrollHeight;
+}
+
+function addLoadingMessage() {
+  const container = document.getElementById('chat-messages');
+  const loading = document.createElement('div');
+  loading.className = 'message assistant loading';
+  loading.id = 'loading-msg';
+  loading.textContent = 'Thinking...';
+  container.appendChild(loading);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeLoadingMessage() {
+  const loading = document.getElementById('loading-msg');
+  if (loading) loading.remove();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Event listeners
+document.getElementById('chat-send').addEventListener('click', sendMessage);
+document.getElementById('chat-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+document.getElementById('persona-select').addEventListener('change', (e) => {
+  state.persona = e.target.value;
+  localStorage.setItem('arena-persona', state.persona);
+});
+
+// Set initial persona
+document.getElementById('persona-select').value = state.persona;
+
+// Initialize
+loadCurriculum();
+</script>
+
+</body>
+</html>
