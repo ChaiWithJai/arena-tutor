@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARENA 3.0: AI Safety Fundamentals</title>
+  <!-- Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Code highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <!-- Math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   <style>
     :root {
       --bg: #0a0a0a;
@@ -1037,6 +1047,226 @@
     .key-line.forward { background: var(--accent); }
     .key-line.backward { background: var(--orange); background: repeating-linear-gradient(90deg, var(--orange), var(--orange) 4px, transparent 4px, transparent 8px); }
     .key-line.attention { background: var(--purple); }
+
+    /* Content Tabs */
+    .content-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .content-tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .content-tab:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .content-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    .content-tab-panel {
+      display: none;
+    }
+
+    .content-tab-panel.active {
+      display: block;
+    }
+
+    /* Lesson Viewer */
+    .lesson-content {
+      line-height: 1.8;
+      font-size: 0.9375rem;
+    }
+
+    .lesson-content h1 {
+      font-size: 1.75rem;
+      margin: 2rem 0 1rem;
+      color: var(--accent);
+    }
+
+    .lesson-content h2 {
+      font-size: 1.375rem;
+      margin: 1.75rem 0 0.75rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .lesson-content h3 {
+      font-size: 1.125rem;
+      margin: 1.5rem 0 0.5rem;
+      color: var(--purple);
+    }
+
+    .lesson-content p {
+      margin: 1rem 0;
+    }
+
+    .lesson-content pre {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .lesson-content code {
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 0.875rem;
+    }
+
+    .lesson-content :not(pre) > code {
+      background: var(--surface-2);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      color: var(--orange);
+    }
+
+    .lesson-content blockquote {
+      border-left: 3px solid var(--purple);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(167, 139, 250, 0.1);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .lesson-content ul, .lesson-content ol {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .lesson-content li {
+      margin: 0.5rem 0;
+    }
+
+    .lesson-content img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .lesson-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .lesson-content th, .lesson-content td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+
+    .lesson-content th {
+      background: var(--surface);
+    }
+
+    .lesson-loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    /* Jupyter Notebook Viewer */
+    .notebook-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .notebook-header {
+      padding: 0.75rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .notebook-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .notebook-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .notebook-btn {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .notebook-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .notebook-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    .jupyter-frame {
+      width: 100%;
+      height: 600px;
+      border: none;
+      background: #fff;
+    }
+
+    .jupyter-instructions {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .jupyter-instructions code {
+      background: var(--surface-2);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin: 1rem 0;
+      font-family: 'SF Mono', Menlo, monospace;
+    }
+
+    .notebook-selector {
+      margin-bottom: 1rem;
+    }
+
+    .notebook-select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.875rem;
+      min-width: 300px;
+    }
   </style>
 </head>
 <body>
@@ -1418,67 +1648,110 @@ function renderContent() {
       </div>
     </div>
 
-    <!-- Learning Objectives -->
-    <div class="objectives-card">
-      <div class="card-header">
-        <span class="card-title">Learning Objectives</span>
-        <span class="card-badge">${getCompletedObjectivesCount(sectionKey)}/${objectives.length} complete</span>
-      </div>
-      ${objectives.map((obj, idx) => {
-        const objKey = `${sectionKey}-${idx}`;
-        const isCompleted = state.completedObjectives[objKey];
-        return `
-          <div class="objective-item" onclick="toggleObjective('${objKey}')" style="cursor:pointer;">
-            <div class="objective-checkbox ${isCompleted ? 'checked' : ''}"></div>
-            <span class="objective-text ${isCompleted ? 'completed' : ''}">${obj}</span>
-          </div>
-        `;
-      }).join('')}
+    <!-- Content Tabs -->
+    <div class="content-tabs">
+      <button class="content-tab active" onclick="switchContentTab('objectives')">Objectives</button>
+      <button class="content-tab" onclick="switchContentTab('lesson')">Lesson</button>
+      <button class="content-tab" onclick="switchContentTab('exercise')">Exercise</button>
     </div>
 
-    <!-- Mental Model -->
-    ${mentalModel ? `
-      <div class="mental-model-card">
-        <div class="mm-header">
-          <div class="mm-icon">M</div>
-          <span class="mm-name">${mentalModel.name}</span>
-        </div>
-        <p class="mm-core">${mentalModel.core}</p>
-      </div>
-    ` : ''}
-
-    <!-- Worked Examples -->
-    ${section.worked_examples?.length ? `
-      <div class="examples-card">
+    <!-- Tab: Objectives -->
+    <div class="content-tab-panel active" id="tab-objectives">
+      <!-- Learning Objectives -->
+      <div class="objectives-card">
         <div class="card-header">
-          <span class="card-title">Worked Examples</span>
+          <span class="card-title">Learning Objectives</span>
+          <span class="card-badge">${getCompletedObjectivesCount(sectionKey)}/${objectives.length} complete</span>
         </div>
-        ${section.worked_examples.map(ex => `
-          <div class="example-item">${ex}</div>
-        `).join('')}
+        ${objectives.map((obj, idx) => {
+          const objKey = `${sectionKey}-${idx}`;
+          const isCompleted = state.completedObjectives[objKey];
+          return `
+            <div class="objective-item" onclick="toggleObjective('${objKey}')" style="cursor:pointer;">
+              <div class="objective-checkbox ${isCompleted ? 'checked' : ''}"></div>
+              <span class="objective-text ${isCompleted ? 'completed' : ''}">${obj}</span>
+            </div>
+          `;
+        }).join('')}
       </div>
-    ` : ''}
 
-    <!-- Code Snippet -->
-    ${section.code_snippet ? `
-      <div class="code-card">
-        <div class="code-header">
-          <span>Python</span>
-          <button onclick="copyCode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">Copy</button>
+      <!-- Mental Model -->
+      ${mentalModel ? `
+        <div class="mental-model-card">
+          <div class="mm-header">
+            <div class="mm-icon">M</div>
+            <span class="mm-name">${mentalModel.name}</span>
+          </div>
+          <p class="mm-core">${mentalModel.core}</p>
         </div>
-        <div class="code-content">
-          <pre id="code-block">${highlightCode(section.code_snippet)}</pre>
-        </div>
-      </div>
-    ` : ''}
+      ` : ''}
 
-    <!-- Capstone Connection -->
-    ${section.capstone_connection ? `
-      <div class="capstone-card">
-        <div class="capstone-label">Capstone Connection</div>
-        <p class="capstone-text">${section.capstone_connection}</p>
+      <!-- Worked Examples -->
+      ${section.worked_examples?.length ? `
+        <div class="examples-card">
+          <div class="card-header">
+            <span class="card-title">Worked Examples</span>
+          </div>
+          ${section.worked_examples.map(ex => `
+            <div class="example-item">${ex}</div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <!-- Code Snippet -->
+      ${section.code_snippet ? `
+        <div class="code-card">
+          <div class="code-header">
+            <span>Python</span>
+            <button onclick="copyCode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">Copy</button>
+          </div>
+          <div class="code-content">
+            <pre id="code-block">${highlightCode(section.code_snippet)}</pre>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Capstone Connection -->
+      ${section.capstone_connection ? `
+        <div class="capstone-card">
+          <div class="capstone-label">Capstone Connection</div>
+          <p class="capstone-text">${section.capstone_connection}</p>
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- Tab: Lesson -->
+    <div class="content-tab-panel" id="tab-lesson">
+      <div class="lesson-content" id="lesson-content">
+        <div class="lesson-loading">Loading lesson content...</div>
       </div>
-    ` : ''}
+    </div>
+
+    <!-- Tab: Exercise -->
+    <div class="content-tab-panel" id="tab-exercise">
+      <div class="notebook-selector">
+        <label style="font-size:0.875rem;color:var(--text-muted);margin-right:0.5rem;">Select notebook:</label>
+        <select class="notebook-select" id="notebook-select" onchange="loadNotebook()">
+          <option value="">-- Select a notebook --</option>
+        </select>
+      </div>
+      <div class="notebook-container">
+        <div class="notebook-header">
+          <span class="notebook-title" id="notebook-title">Jupyter Notebook</span>
+          <div class="notebook-actions">
+            <button class="notebook-btn" onclick="refreshJupyter()">Refresh</button>
+            <button class="notebook-btn primary" onclick="openJupyterFull()">Open Full</button>
+          </div>
+        </div>
+        <div id="jupyter-container">
+          <div class="jupyter-instructions">
+            <p>Start Jupyter server to run exercises:</p>
+            <code>cd data/notebooks && jupyter notebook --port=8888</code>
+            <p style="margin-top:1rem;font-size:0.8125rem;">Then select a notebook above to begin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Navigation -->
     <div class="nav-buttons">
@@ -1490,6 +1763,10 @@ function renderContent() {
       </button>
     </div>
   `;
+
+  // Load lesson content and populate notebook selector
+  loadLessonContent();
+  populateNotebookSelector();
 }
 
 // Toggle objective completion
@@ -1933,6 +2210,258 @@ document.getElementById('persona-select').addEventListener('change', (e) => {
 
 // Set initial persona
 document.getElementById('persona-select').value = state.persona;
+
+// Content tab switching
+function switchContentTab(tabName) {
+  // Update tab buttons
+  document.querySelectorAll('.content-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  // Update tab panels
+  document.querySelectorAll('.content-tab-panel').forEach(panel => {
+    panel.classList.remove('active');
+  });
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+
+  // Load content on tab switch
+  if (tabName === 'lesson') {
+    loadLessonContent();
+  } else if (tabName === 'exercise') {
+    populateNotebookSelector();
+  }
+}
+
+// Lesson file mapping based on section ID
+function getLessonPath(sectionId, chapterIdx) {
+  // Map section IDs to actual lesson file names
+  const lessonMap = {
+    // Chapter 0
+    '0.0': 'ch0/00_[0.0]_Prerequisites.md',
+    '0.1': 'ch0/01_[0.1]_Ray_Tracing.md',
+    '0.2': 'ch0/02_[0.2]_CNNs_&_ResNets.md',
+    '0.3': 'ch0/03_[0.3]_Optimization.md',
+    '0.4': 'ch0/04_[0.4]_Backprop.md',
+    '0.5': 'ch0/05_[0.5]_VAEs_&_GANs.md',
+    // Chapter 1
+    '1.1': 'ch1/01_[1.1]_Transformer_from_Scratch.md',
+    '1.2': 'ch1/02_[1.2]_Intro_to_Mech_Interp.md',
+    '1.3': 'ch1/11_🧬_[1.3.1]_Toy_Models_of_Superposition_&_SAEs.md',
+    '1.4': 'ch1/21_📚_[1.4.1]_Indirect_Object_Identification.md',
+    // Chapter 2
+    '2.1': 'ch2/10_[2.1]_Intro_to_RL.md',
+    '2.2': 'ch2/20_[2.2.1]_Deep_Q_Networks.md',
+    '2.3': 'ch2/30_[2.3]_PPO.md',
+    '2.4': 'ch2/40_[2.4]_RLHF.md',
+    // Chapter 3
+    '3.1': 'ch3/01_[3.1]_Intro_to_Evals.md',
+    '3.2': 'ch3/02_[3.2]_Dataset_Generation.md',
+    '3.3': 'ch3/03_[3.3]_Running_Evals_with_Inspect.md',
+    '3.4': 'ch3/04_[3.4]_LLM_Agents.md',
+  };
+
+  return lessonMap[sectionId] || null;
+}
+
+// Load and render lesson markdown
+async function loadLessonContent() {
+  const chapter = state.curriculum?.chapters?.[state.currentChapter];
+  const section = chapter?.sections?.[state.currentSection];
+  if (!section) return;
+
+  const lessonContent = document.getElementById('lesson-content');
+  const lessonPath = getLessonPath(section.id, state.currentChapter);
+
+  if (!lessonPath) {
+    lessonContent.innerHTML = `
+      <div class="lesson-loading">
+        <p>No lesson content available for this section.</p>
+        <p style="font-size:0.8125rem;margin-top:1rem;">Use the Objectives tab for learning objectives and the tutor chat for guidance.</p>
+      </div>
+    `;
+    return;
+  }
+
+  lessonContent.innerHTML = '<div class="lesson-loading">Loading lesson...</div>';
+
+  try {
+    const res = await fetch(`${API_URL}/data/lessons/${lessonPath}`);
+    if (!res.ok) throw new Error('Lesson not found');
+
+    let markdown = await res.text();
+
+    // Configure marked
+    marked.setOptions({
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          return hljs.highlight(code, { language: lang }).value;
+        }
+        return hljs.highlightAuto(code).value;
+      },
+      breaks: true,
+      gfm: true,
+    });
+
+    // Render markdown
+    lessonContent.innerHTML = marked.parse(markdown);
+
+    // Render math with KaTeX
+    renderMathInElement(lessonContent, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false },
+      ],
+      throwOnError: false,
+    });
+
+  } catch (e) {
+    console.error('Failed to load lesson:', e);
+    lessonContent.innerHTML = `
+      <div class="lesson-loading">
+        <p>Could not load lesson content.</p>
+        <p style="font-size:0.8125rem;margin-top:0.5rem;">${e.message}</p>
+      </div>
+    `;
+  }
+}
+
+// Get notebooks for current chapter
+function getNotebooksForChapter(chapterIdx) {
+  const notebookMap = {
+    0: [
+      { id: '0.0_exercises', name: '0.0 Prerequisites', file: 'ch0/0.0_Prerequisites_exercises.ipynb' },
+      { id: '0.1_exercises', name: '0.1 Ray Tracing', file: 'ch0/0.1_Ray_Tracing_exercises.ipynb' },
+      { id: '0.2_exercises', name: '0.2 CNNs & ResNets', file: 'ch0/0.2_CNNs_&_ResNets_exercises.ipynb' },
+      { id: '0.3_exercises', name: '0.3 Optimization', file: 'ch0/0.3_Optimization_exercises.ipynb' },
+      { id: '0.4_exercises', name: '0.4 Backprop', file: 'ch0/0.4_Backprop_exercises.ipynb' },
+      { id: '0.5_exercises', name: '0.5 VAEs & GANs', file: 'ch0/0.5_VAEs_&_GANs_exercises.ipynb' },
+    ],
+    1: [
+      { id: '1.1_exercises', name: '1.1 Transformer from Scratch', file: 'ch1/1.1_Transformer_from_Scratch_exercises.ipynb' },
+      { id: '1.2_exercises', name: '1.2 Intro to Mech Interp', file: 'ch1/1.2_Intro_to_Mech_Interp_exercises.ipynb' },
+      { id: '1.3.1_exercises', name: '1.3.1 Superposition & SAEs', file: 'ch1/1.3.1_Toy_Models_of_Superposition_&_SAEs_exercises.ipynb' },
+      { id: '1.3.2_exercises', name: '1.3.2 Interpretability with SAEs', file: 'ch1/1.3.2_Interpretability_with_SAEs_exercises.ipynb' },
+      { id: '1.4.1_exercises', name: '1.4.1 IOI Circuit', file: 'ch1/1.4.1_Indirect_Object_Identification_exercises.ipynb' },
+      { id: '1.4.2_exercises', name: '1.4.2 Function Vectors & Steering', file: 'ch1/1.4.2_Function_Vectors_&_Model_Steering_exercises.ipynb' },
+      { id: '1.5.1_exercises', name: '1.5.1 Balanced Bracket Classifier', file: 'ch1/1.5.1_Balanced_Bracket_Classifier_exercises.ipynb' },
+      { id: '1.5.2_exercises', name: '1.5.2 Grokking & Modular Arithmetic', file: 'ch1/1.5.2_Grokking_&_Modular_Arithmetic_exercises.ipynb' },
+      { id: '1.5.3_exercises', name: '1.5.3 OthelloGPT', file: 'ch1/1.5.3_OthelloGPT_exercises.ipynb' },
+    ],
+    2: [
+      { id: '2.1_exercises', name: '2.1 Intro to RL', file: 'ch2/2.1_Intro_to_RL_exercises.ipynb' },
+      { id: '2.2.1_exercises', name: '2.2.1 Deep Q-Networks', file: 'ch2/2.2.1_Deep_Q_Networks_exercises.ipynb' },
+      { id: '2.2.2_exercises', name: '2.2.2 Policy Gradient', file: 'ch2/2.2.2_Policy_Gradient_exercises.ipynb' },
+      { id: '2.3_exercises', name: '2.3 PPO', file: 'ch2/2.3_PPO_exercises.ipynb' },
+      { id: '2.4_exercises', name: '2.4 RLHF', file: 'ch2/2.4_RLHF_exercises.ipynb' },
+    ],
+    3: [
+      { id: '3.1_exercises', name: '3.1 Intro to Evals', file: 'ch3/3.1_Intro_to_Evals_exercises.ipynb' },
+      { id: '3.2_exercises', name: '3.2 Dataset Generation', file: 'ch3/3.2_Dataset_Generation_exercises.ipynb' },
+      { id: '3.3_exercises', name: '3.3 Running Evals with Inspect', file: 'ch3/3.3_Running_Evals_with_Inspect_exercises.ipynb' },
+      { id: '3.4_exercises', name: '3.4 LLM Agents', file: 'ch3/3.4_LLM_Agents_exercises.ipynb' },
+    ],
+  };
+  return notebookMap[chapterIdx] || [];
+}
+
+// Populate notebook dropdown
+function populateNotebookSelector() {
+  const select = document.getElementById('notebook-select');
+  if (!select) return;
+
+  const notebooks = getNotebooksForChapter(state.currentChapter);
+  const section = state.curriculum?.chapters?.[state.currentChapter]?.sections?.[state.currentSection];
+
+  select.innerHTML = '<option value="">-- Select a notebook --</option>' +
+    notebooks.map(nb => `<option value="${nb.file}">${nb.name}</option>`).join('');
+
+  // Try to auto-select matching notebook
+  if (section?.id) {
+    const matchingNb = notebooks.find(nb => nb.id.startsWith(section.id.replace('.', '_')));
+    if (matchingNb) {
+      select.value = matchingNb.file;
+      loadNotebook();
+    }
+  }
+}
+
+// Jupyter server configuration
+const JUPYTER_URL = 'http://localhost:8888';
+let jupyterToken = localStorage.getItem('jupyter-token') || '';
+
+// Load notebook in iframe
+function loadNotebook() {
+  const select = document.getElementById('notebook-select');
+  const container = document.getElementById('jupyter-container');
+  const title = document.getElementById('notebook-title');
+
+  if (!select.value) {
+    container.innerHTML = `
+      <div class="jupyter-instructions">
+        <p>Start Jupyter server to run exercises:</p>
+        <code>cd data/notebooks && jupyter notebook --port=8888</code>
+        <p style="margin-top:1rem;font-size:0.8125rem;">Then select a notebook above to begin.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const notebookPath = select.value;
+  title.textContent = notebookPath.split('/').pop().replace('.ipynb', '');
+
+  // Check if we need token
+  if (!jupyterToken) {
+    container.innerHTML = `
+      <div class="jupyter-instructions">
+        <p>Enter your Jupyter token:</p>
+        <input type="text" id="jupyter-token-input" placeholder="Token from terminal"
+               style="padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);width:300px;margin:0.5rem 0;">
+        <br>
+        <button onclick="setJupyterToken()" class="notebook-btn primary" style="margin-top:0.5rem;">Connect</button>
+        <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted);">
+          Find your token in the terminal where you ran <code>jupyter notebook</code>
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  // Load notebook in iframe
+  const notebookUrl = `${JUPYTER_URL}/notebooks/${notebookPath}?token=${jupyterToken}`;
+  container.innerHTML = `<iframe class="jupyter-frame" src="${notebookUrl}" allow="clipboard-write"></iframe>`;
+}
+
+// Set Jupyter token
+function setJupyterToken() {
+  const input = document.getElementById('jupyter-token-input');
+  if (input && input.value) {
+    jupyterToken = input.value.trim();
+    localStorage.setItem('jupyter-token', jupyterToken);
+    loadNotebook();
+  }
+}
+
+// Refresh Jupyter iframe
+function refreshJupyter() {
+  const iframe = document.querySelector('.jupyter-frame');
+  if (iframe) {
+    iframe.src = iframe.src;
+  }
+}
+
+// Open Jupyter in full window
+function openJupyterFull() {
+  const select = document.getElementById('notebook-select');
+  if (select.value && jupyterToken) {
+    const notebookUrl = `${JUPYTER_URL}/notebooks/${select.value}?token=${jupyterToken}`;
+    window.open(notebookUrl, '_blank');
+  } else {
+    window.open(JUPYTER_URL, '_blank');
+  }
+}
 
 // Initialize
 loadCurriculum();

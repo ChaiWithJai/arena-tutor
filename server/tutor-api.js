@@ -436,6 +436,37 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
+    // Static files: serve /data/* for lessons and code
+    else if (pathname.startsWith('/data/') && req.method === 'GET') {
+      const safePath = path.normalize(pathname).replace(/^\//, '');
+      if (safePath.includes('..')) {
+        sendJSON(res, { error: 'Invalid path' }, 400);
+        return;
+      }
+
+      const filePath = path.join(__dirname, '..', safePath);
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        const contentTypes = {
+          '.md': 'text/markdown; charset=utf-8',
+          '.py': 'text/plain; charset=utf-8',
+          '.json': 'application/json',
+          '.ipynb': 'application/json',
+          '.txt': 'text/plain; charset=utf-8',
+        };
+        const contentType = contentTypes[ext] || 'application/octet-stream';
+
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'public, max-age=3600',
+        });
+        fs.createReadStream(filePath).pipe(res);
+      } else {
+        sendJSON(res, { error: 'File not found' }, 404);
+      }
+    }
+
     // 404
     else {
       sendJSON(res, { error: 'Not found' }, 404);
